@@ -16,7 +16,7 @@ class Strand( str ):
 
 class StrandDict:
 	"""implements StrandDict using built in dict type where keys are names of strands and members are lists of characters (A,T,C,G) if DNA or (A,U,C,G) if RNA"""
-
+	
 	def __init__ (self):
 		""" 
 		initializes an empty dict 
@@ -65,8 +65,7 @@ class StrandDict:
 		"""
 		pass
 
-
-class PermutationSet:
+class Permutations:
 	def __init__(self):
 		"""
         self.perm_list = []
@@ -116,7 +115,9 @@ class ScoreMatrix:
 class Permutation:
 	"""Represents a single circular permutation of named strands"""
 	
-	def __init__(self,names,strands):
+	def __init__(self,strands):
+	"""Accepts an ordered list of Strands"""
+		self.strands = strands;
 		pass
 		
 	def get_names(self):
@@ -124,7 +125,14 @@ class Permutation:
 		pass
 		
 	def get_strands(self):
-		"""Returns a list of sequences, in order"""
+		"""Returns a list of Strands, in order"""
+		pass
+		
+	def get_concatamer(self,separator=""):
+		"""
+		Returns a string containing the sequences concatenated together,
+		separated by an optinal separator
+		"""
 		pass
 		
 	def get_name(self):
@@ -184,6 +192,13 @@ class State:
 		"""Returns list of (Permutation, ScoreMatrix) tuples, as passed to the initiator"""
 		pass
 		
-
-		
-		
+class Transformation:
+	"""
+	Performs a single base transformation on an Strand
+	"""
+	
+	def transform(self,old)
+		"""
+		Accepts the old Strand and returns a new one, with the transformation
+		applied.
+		"""
