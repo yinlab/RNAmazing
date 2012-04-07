@@ -39,7 +39,7 @@ class StrandDict:
 		"""
 		pass
 		
-	def does_exist (name):
+	def does_exist (self, name):
 		"""
 		checks if a strand with this name already exist before implementing it as a dict
 		self.dict.(name in strand_dict)
@@ -66,7 +66,9 @@ class StrandDict:
 		pass
 
 
-class PermutationSet:
+class Permutations:
+	""" can be implemented as another dict or set """
+
 	def __init__(self):
 		"""
         self.perm_list = []
