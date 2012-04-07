@@ -14,39 +14,42 @@ class Strand( str ):
 		pass	
     	
 
-class StrandDict(dict) :
+class StrandDict:
 	"""implements StrandDict using built in dict type where keys are names of strands and members are lists of characters (A,T,C,G) if DNA or (A,U,C,G) if RNA"""
 
 	def __init__ (self):
-		""" initializes an empty dict """
+		""" 
+		initializes an empty dict 
+		strand_dict = dict([])
+		"""
 		pass
-
-	def does_exist (name):
-		"""
-		checks if a strand with this name already exist before implementing it as a dict
-		"""
-    	pass
 
 	def add (self, Strand):
 		""" 
 		add sequence as a named strand to the dict, given that name not already used
-		if (correct_type (sequence)) && !(self.does_exist(name)) then 
-		self.list.append((name,sequence))
-		self.length += 1	
+		if !(self.does_exist(name)) then 
+		self.dict.add .....
 		"""
-		pass    
+		pass 
 
 	def remove (self, Strand):
 		"""
 		search through list of strands and remove instance of strand
-		
-		if self.length != 0 then self.length += 1 else 0
+		self.dict 
 		"""
 		pass
 		
+	def does_exist (name):
+		"""
+		checks if a strand with this name already exist before implementing it as a dict
+		self.dict.(name in strand_dict)
+		"""
+    	pass
+
 	def num_strands(self):
 		""" 
         outputs number of strands in dict, using built in dict implementation 
+        self.dict.len(strand_dict)
         """
         pass
         
@@ -61,6 +64,7 @@ class StrandDict(dict) :
 		print names of all strands in dict using dict implementation
 		"""
 		pass
+
 
 class PermutationSet:
 	def __init__(self):
