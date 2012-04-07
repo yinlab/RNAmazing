@@ -2,32 +2,73 @@
 class StrandDict:
     
 	def __init__ (self):
+        """
 		self.length = 0
 		self.list = []
-	def does_exist (name)
-        """checks if a strand with this name already exist"""
-    def correct_type (self, sequence);
-        """iteratively check if all letters in list are a, t, c, or g"""
+        """
+        pass
+        
+    def does_exist (name):
+        """
+        checks if a strand with this name already exist
+        """
+        pass
+    
+    def correct_type (self, sequence):
+        """
+        iteratively check if all letters in list are a, t, c, or g
+        """
+        pass        
+    
     def add (self, name, sequence):
+        """ 
+        add sequence as a named strand to the dict, given that name not already used
+        code:
         if (correct_type (sequence)) && !(does_exist(name)) then 
         self.list.append((name,sequence))
-        self.length += 1		
+        self.length += 1	
+        """
+        pass    
+        
 	def remove (self, name):
-		"""search through list and remove instance of strand"""
-		if self.length != 0 then self.length += 1 else 0
+		"""
+        search through list of strands and remove instance of strand
+        pseudo-code:
+        if self.length != 0 then self.length += 1 else 0
+        """
+        pass
+
 	def num_strands(self):
-		print “%d” % self.length
+		""" 
+        outputs number of strands in dict 
+        """
+        pass
+
     def members (self):
-        """print names of all strands"""
-    def sequence (self, name)
-        """iteratively check for instance of name and print its sequence"""
+        """
+        print names of all strands in dict
+        """
+        pass
+
+    def sequence (self, name):
+        """
+        iteratively check for instance of name and print its sequence
+        """
+        pass
 
 
 class PermutationSet:
 	def __init__(self):
-		self.perm_list = []
+		"""
+        self.perm_list = []
+        """
+        pass
+    
 	def permutations (self,list):
-		"""calculate all permutation of list"""
+		"""
+        calculate all permutation of list
+        """
+        pass
 
 class ScoreMatrix:
 	"""2D triangular matrix containing scores of optimal substructures"""
