@@ -23,8 +23,8 @@ class StrandDict:
     def add (self, name, sequence):
         """ 
         add sequence as a named strand to the dict, given that name not already used
-        code:
-        if (correct_type (sequence)) && !(does_exist(name)) then 
+
+        if (correct_type (sequence)) && !(self.does_exist(name)) then 
         self.list.append((name,sequence))
         self.length += 1	
         """
@@ -33,7 +33,7 @@ class StrandDict:
 	def remove (self, name):
 		"""
         search through list of strands and remove instance of strand
-        pseudo-code:
+
         if self.length != 0 then self.length += 1 else 0
         """
         pass
