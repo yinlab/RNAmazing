@@ -1,5 +1,5 @@
-class Strand( str ):
-    
+class Strand:
+
     def __init__ (self, material, name, sequence):
     	"""
     	specifies whether DNA or RNA, gives name, and gives sequence
@@ -18,13 +18,13 @@ class StrandDict:
 	"""implements StrandDict using built in dict type where keys are names of strands and members are lists of characters (A,T,C,G) if DNA or (A,U,C,G) if RNA"""
 
 	def __init__ (self):
-		""" 
+		"""
 		initializes an empty dict 
 		strand_dict = dict([])
 		"""
 		pass
 
-	def add (self, Strand):
+	def add (self, strand):
 		""" 
 		add sequence as a named strand to the dict, given that name not already used
 		if !(self.does_exist(name)) then 
@@ -32,7 +32,7 @@ class StrandDict:
 		"""
 		pass 
 
-	def remove (self, Strand):
+	def remove (self, strand):
 		"""
 		search through list of strands and remove instance of strand
 		self.dict 
@@ -53,7 +53,7 @@ class StrandDict:
         """
         pass
         
-	def sequence (self, Strand):
+	def sequence (self, strand):
 		"""
 		iteratively check for instance of name and print its sequence
 		"""
