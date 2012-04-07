@@ -1,26 +1,40 @@
+class Strand ( string ):
+    
+    def __init__ (material, name, sequence):
+    """
+    specifies whether DNA or RNA, gives name, and gives sequence
+    """
+    pass
+    
 
-class StrandDict:
+
+class StrandDict( dict ):
+    
+    """
+    implements StrandDict using built in dict type where keys are names of strands and members are lists of characters (A,T,C,G) if DNA or (A,U,C,G) if RNA
+        
+    """
     
 	def __init__ (self):
         """
 		self.length = 0
-		self.list = []
+		self.list = ** empty dict **
         """
         pass
         
     def does_exist (name):
         """
-        checks if a strand with this name already exist
+        checks if a strand with this name already exist before implementing it as a dict
         """
         pass
     
-    def correct_type (self, sequence):
+    def correct_type (self, Strand):
         """
-        iteratively check if all letters in list are a, t, c, or g
+        iteratively check if all letters in list are a, t (or u), c, or g, making sure to check materia
         """
         pass        
     
-    def add (self, name, sequence):
+    def add (self, Strand):
         """ 
         add sequence as a named strand to the dict, given that name not already used
 
@@ -30,7 +44,7 @@ class StrandDict:
         """
         pass    
         
-	def remove (self, name):
+	def remove (self, Strand):
 		"""
         search through list of strands and remove instance of strand
 
@@ -40,19 +54,19 @@ class StrandDict:
 
 	def num_strands(self):
 		""" 
-        outputs number of strands in dict 
+        outputs number of strands in dict, using built in dict implementation 
+        """
+        pass
+
+    def sequence (self, Strand):
+        """
+        iteratively check for instance of name and print its sequence
         """
         pass
 
     def members (self):
         """
-        print names of all strands in dict
-        """
-        pass
-
-    def sequence (self, name):
-        """
-        iteratively check for instance of name and print its sequence
+        print names of all strands in dict using dict implementation
         """
         pass
 
