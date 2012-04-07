@@ -1,5 +1,5 @@
-class Strand( str ):
-    
+class Strand:
+
     def __init__ (self, material, name, sequence):
     	"""
     	specifies whether DNA or RNA, gives name, and gives sequence
@@ -18,13 +18,13 @@ class StrandDict:
 	"""implements StrandDict using built in dict type where keys are names of strands and members are lists of characters (A,T,C,G) if DNA or (A,U,C,G) if RNA"""
 	
 	def __init__ (self):
-		""" 
+		"""
 		initializes an empty dict 
 		strand_dict = dict([])
 		"""
 		pass
 
-	def add (self, Strand):
+	def add (self, strand):
 		""" 
 		add sequence as a named strand to the dict, given that name not already used
 		if !(self.does_exist(name)) then 
@@ -32,14 +32,14 @@ class StrandDict:
 		"""
 		pass 
 
-	def remove (self, Strand):
+	def remove (self, strand):
 		"""
 		search through list of strands and remove instance of strand
 		self.dict 
 		"""
 		pass
 		
-	def does_exist (name):
+	def does_exist (self, name):
 		"""
 		checks if a strand with this name already exist before implementing it as a dict
 		self.dict.(name in strand_dict)
@@ -53,7 +53,7 @@ class StrandDict:
         """
         pass
         
-	def sequence (self, Strand):
+	def sequence (self, strand):
 		"""
 		iteratively check for instance of name and print its sequence
 		"""
@@ -65,7 +65,10 @@ class StrandDict:
 		"""
 		pass
 
+
 class Permutations:
+	""" can be implemented as another dict or set """
+
 	def __init__(self):
 		"""
         self.perm_list = []
@@ -192,6 +195,7 @@ class State:
 		"""Returns list of (Permutation, ScoreMatrix) tuples, as passed to the initiator"""
 		pass
 		
+
 class Transformation:
 	"""
 	Performs a single base transformation on an Strand
@@ -202,3 +206,20 @@ class Transformation:
 		Accepts the old Strand and returns a new one, with the transformation
 		applied.
 		"""
+
+class Visualize:
+	"""
+	Takes structure and outputs it as visualize
+	"""
+
+	def viz_circle(self,structure):
+		"""Returns bmp of circular secondary structure graph"""
+		pass
+
+	def viz_planar(self,structure):
+		"""Return bmp of planar secondary structure graph"""
+		pass
+		
+	def viz_arc(self,structure):
+		"""Return bmp of arc graph"""
+
