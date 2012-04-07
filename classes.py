@@ -1,27 +1,31 @@
 class Strand( str ):
     
-    def __init__ (material, name, sequence):
+    def __init__ (self, material, name, sequence):
     	"""
     	specifies whether DNA or RNA, gives name, and gives sequence
+    	and checks self.correct_type(sequence)
     	"""
     	pass
     
-
+    def correct_type (self, sequence):
+		"""
+		iteratively check if all letters in list are a, t (or u), c, or g, making sure to check materia
+		"""
+		pass	
+    	
 
 class StrandDict(dict) :
 	"""implements StrandDict using built in dict type where keys are names of strands and members are lists of characters (A,T,C,G) if DNA or (A,U,C,G) if RNA"""
+
+	def __init__ (self):
+		""" initializes an empty dict """
+		pass
 
 	def does_exist (name):
 		"""
 		checks if a strand with this name already exist before implementing it as a dict
 		"""
     	pass
-    	
-	def correct_type (self, Strand):
-		"""
-		iteratively check if all letters in list are a, t (or u), c, or g, making sure to check materia
-		"""
-		pass
 
 	def add (self, Strand):
 		""" 
