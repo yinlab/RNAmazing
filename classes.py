@@ -119,7 +119,7 @@ class Permutation:
 	"""Represents a single circular permutation of named strands"""
 	
 	def __init__(self,strands):
-	"""Accepts an ordered list of Strands"""
+		"""Accepts an ordered list of Strands"""
 		self.strands = strands;
 		pass
 		
@@ -201,7 +201,7 @@ class Transformation:
 	Performs a single base transformation on an Strand
 	"""
 	
-	def transform(self,old)
+	def transform(self,old):
 		"""
 		Accepts the old Strand and returns a new one, with the transformation
 		applied.

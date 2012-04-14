@@ -1,0 +1,3 @@
+{strand1;dna;aaaatttcccacgatcgat}
+{strand2;dna;tatatatatatatatta}
+{strand3;dna;agagagcgcgagatatag}
