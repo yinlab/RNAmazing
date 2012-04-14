@@ -5,6 +5,9 @@ class Strand:
     	specifies whether DNA or RNA, gives name, and gives sequence
     	and checks self.correct_type(sequence)
     	"""
+    	self.material = material
+    	self.name = name
+    	self.sequence = sequence
     	pass
     
     def correct_type (self, sequence):
@@ -12,7 +15,8 @@ class Strand:
 		iteratively check if all letters in list are a, t (or u), c, or g, making sure to check materia
 		"""
 		pass	
-    	
+    
+    
 
 class StrandDict:
 	"""implements StrandDict using built in dict type where keys are names of strands and members are lists of characters (A,T,C,G) if DNA or (A,U,C,G) if RNA"""
@@ -206,20 +210,3 @@ class Transformation:
 		Accepts the old Strand and returns a new one, with the transformation
 		applied.
 		"""
-
-class Visualize:
-	"""
-	Takes structure and outputs it as visualize
-	"""
-
-	def viz_circle(self,structure):
-		"""Returns bmp of circular secondary structure graph"""
-		pass
-
-	def viz_planar(self,structure):
-		"""Return bmp of planar secondary structure graph"""
-		pass
-		
-	def viz_arc(self,structure):
-		"""Return bmp of arc graph"""
-

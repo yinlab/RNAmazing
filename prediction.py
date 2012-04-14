@@ -28,6 +28,18 @@ class AbstractSingleStrandPredictor:
 	"""
 		pass
 		
+	def to_structure(self):
+	"""
+	Returns the predicted secondary structure calculated by #predict_structure
+	"""
+		pass
+		
+	def to_score_matrix(self):
+	"""
+	Returns the score matrix g enerated by #predict_structure
+	"""
+		pass
+		
 class MultiStrandPredictor:
 	
 	@staticmethod
