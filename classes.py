@@ -12,82 +12,21 @@ class Strand:
 		self.material = material
 		self.name = name
 		self.sequence = sequence
-		pass
-	
-	
-	def correct_type (self, sequence):
-		"""
-		iteratively check if all letters in list are a, t (or u), c, or g, making sure to check materia
-		"""
-		pass	
-	
-	
-
-class StrandDict:
-	"""implements StrandDict using built in dict type where keys are names of strands and members are lists of characters (A,T,C,G) if DNA or (A,U,C,G) if RNA"""
-	
-	def __init__ (self):
-		"""
-		initializes an empty dict 
-		strand_dict = dict([])
-		"""
-		pass
-
-	def add (self, strand):
-		""" 
-		add sequence as a named strand to the dict, given that name not already used
-		if !(self.does_exist(name)) then 
-		self.dict.add .....
-		"""
-		pass 
-
-	def remove (self, strand):
-		"""
-		search through list of strands and remove instance of strand
-		self.dict 
-		"""
-		pass
-		
-	def does_exist (self, name):
-		"""
-		checks if a strand with this name already exist before implementing it as a dict
-		self.dict.(name in strand_dict)
-		"""
-		pass
-
-	def num_strands(self):
-		""" 
-		outputs number of strands in dict, using built in dict implementation 
-		self.dict.len(strand_dict)
-		"""
-		pass
-		
-	def sequence (self, strand):
-		"""
-		iteratively check for instance of name and print its sequence
-		"""
-		pass
-	
-	def members (self):
-		"""
-		print names of all strands in dict using dict implementation
-		"""
-		pass
-
 
 class Permutations:
 	""" can be implemented as another dict or set """
 
 	# so there is some redundancy in this, but it will have to do for now
-	def __init__(self, list):
-		self.permutation_list = itertools.permutations(list)
+	def __init__(self, lis):
+		self.permutation_list = itertools.permutations(lis)
 		self.actual_permutation_list = []
 		for element in self.permutation_list:
-			self.actual_permutation_list.append(classes.Permutation(element))
+			self.actual_permutation_list.append(classes.Permutation(list(element)))
+		pass
 	
 	def permutations (self):
 		"""
-		calculate all permutation of list
+		return all permutations
 		"""
 		return self.actual_permutation_list
 
@@ -138,13 +77,13 @@ class Permutation:
 	
 	def __init__(self, strands):
 		"""Accepts an ordered list of Strands"""
-		#if(isinstance(strands, list)):
-		self.strands = strands
-		self.namelist = []
-		self.nameconcatenation = ""
-		self.seqconcatenation = ""
-		#else:
-		#	print "You fail"
+		if(isinstance(strands, list)):
+			self.strands = strands
+			self.namelist = []
+			self.nameconcatenation = ""
+			self.seqconcatenation = ""
+		else:
+			raise Exception
 		
 	def get_names(self):
 		"""Returns a list of names of the strands, in order"""
@@ -172,7 +111,7 @@ class Permutation:
 		Returns the names of the strands, concatenated together; can be used 
 		as a unique identifier for this Permutation within the ensemble.
 		"""
-		for i in range(0, gotlen(self.strands)):
+		for i in range(0, len(self.strands)):
 			self.nameconcatenation = self.nameconcatenation + (self.strands[i]).name
 		return self.nameconcatenation
 		
