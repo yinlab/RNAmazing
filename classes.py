@@ -101,19 +101,20 @@ class Permutation:
 		Returns a string containing the sequences concatenated together,
 		separated by an optional separator
 		"""
-		#return separator.join(map(lambda strand: strand.sequence, self.strands))
-		for i in range(0, len(self.strands)):
-			self.seqconcatenation = self.seqconcatenation + separator + (self.strands[i]).sequence
-		return self.seqconcatenation
-			
-	def get_name(self):
+		#self.seqconcatenation = 
+		#return self.seqconcatenation
+		return separator.join(map(lambda strand: strand.sequence, self.strands))
+		
+	def get_name(self, separator=""):
 		"""
 		Returns the names of the strands, concatenated together; can be used 
 		as a unique identifier for this Permutation within the ensemble.
 		"""
-		for i in range(0, len(self.strands)):
-			self.nameconcatenation = self.nameconcatenation + (self.strands[i]).name
-		return self.nameconcatenation
+		#		for i in range(0, len(self.strands)):
+		#			self.nameconcatenation = self.nameconcatenation + (self.strands[i]).name
+		#		return self.nameconcatenation
+		return separator.join(map(lambda strand: strand.name, self.strands))
+
 		
 class Structure:
 	"""Represents the secondary structure of a given strand"""
