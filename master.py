@@ -11,6 +11,7 @@ import sys
 import fnmatch
 import re
 import string
+import prediction
 
 # imports .py files we have created
 import classes
@@ -122,9 +123,15 @@ alpha = classes.Permutation(strands_list)
 print alpha.get_concatamer("")
 
 # test of creating permutation list
+print "Testing multiple permutations..."
+
 beta = classes.Permutations(strands_list)
 for element in beta.permutations():
+	print "Permutation: "+element.get_name()
 	print element.get_concatamer("")
+	nussinov = prediction.NussinovPredictor(element,None)
+	nussinov.predict_structure()
+	print nussinov.to_structure()
 
 
 

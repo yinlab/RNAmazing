@@ -57,7 +57,7 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 		"""
 		self.permutation = permutation
 		if(score_matrix == None):
-			l = len(permutation.get_concatamer())
+			(seq,l) = self.get_sequence()
 			score_matrix = ScoreMatrix(l,l)
 		
 		self.score_matrix = score_matrix
@@ -149,21 +149,18 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 		"""
 		self.generate_score_matrix()
 		self.traceback()
-		pass
 		
 	def to_structure(self):
 		"""
 		Returns the predicted secondary structure calculated by #predict_structure
 		"""
 		return self.pairs
-		pass
 		
 	def to_score_matrix(self):
 		"""
 		Returns the score matrix g enerated by #predict_structure
 		"""
 		return self.score_matrix
-		pass
 		
 		
 		

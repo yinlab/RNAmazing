@@ -172,7 +172,7 @@ class Permutation:
 		Returns the names of the strands, concatenated together; can be used 
 		as a unique identifier for this Permutation within the ensemble.
 		"""
-		for i in range(0, gotlen(self.strands)):
+		for i in range(0, len(self.strands)):
 			self.nameconcatenation = self.nameconcatenation + (self.strands[i]).name
 		return self.nameconcatenation
 		
@@ -182,6 +182,10 @@ class Structure:
 	def __init__(self, pairs):
 		"""Builds an initial structure from a list of (int,int) tuples"""
 		self.pairs = pairs
+		
+	def __str__(self):
+		"""Prints an informal string-based representation of the structure"""
+		return str(self.pairs)
 		
 	def get_pairs(self):
 		"""Returns the structure as a list of (int,int) tuples"""
