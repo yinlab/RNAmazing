@@ -1,3 +1,7 @@
+import itertools
+import sys
+import classes
+
 class Strand:
 
 	def __init__ (self, material, name, sequence):
@@ -9,6 +13,7 @@ class Strand:
 		self.name = name
 		self.sequence = sequence
 		pass
+	
 	
 	def correct_type (self, sequence):
 		"""
@@ -73,17 +78,18 @@ class StrandDict:
 class Permutations:
 	""" can be implemented as another dict or set """
 
-	def __init__(self):
-		"""
-		self.perm_list = []
-		"""
-		pass
+	# so there is some redundancy in this, but it will have to do for now
+	def __init__(self, list):
+		self.permutation_list = itertools.permutations(list)
+		self.actual_permutation_list = []
+		for element in self.permutation_list:
+			self.actual_permutation_list.append(classes.Permutation(element))
 	
-	def permutations (self, list):
+	def permutations (self):
 		"""
 		calculate all permutation of list
 		"""
-		pass
+		return self.actual_permutation_list
 
 class ScoreMatrix:
 	"""2D triangular matrix containing scores of optimal substructures"""
@@ -132,15 +138,21 @@ class Permutation:
 	
 	def __init__(self, strands):
 		"""Accepts an ordered list of Strands"""
-		if(isinstance(strands, list)):
-			self.strands = strands;
-		else:
-			raise Error()
+		#if(isinstance(strands, list)):
+		self.strands = strands
+		self.namelist = []
+		self.nameconcatenation = ""
+		self.seqconcatenation = ""
+		#else:
+		#	print "You fail"
 		
 	def get_names(self):
 		"""Returns a list of names of the strands, in order"""
-		pass
+		for element in self.strands:
+			self.namelist.append(element.name)
+		return self.namelist
 		
+	# what was the purpose of this guy again?
 	def get_strands(self):
 		"""Returns a list of Strands, in order"""
 		pass
@@ -150,15 +162,20 @@ class Permutation:
 		Returns a string containing the sequences concatenated together,
 		separated by an optional separator
 		"""
-		return separator.join(map(lambda strand: strand.sequence, self.strands))
-		
+		#return separator.join(map(lambda strand: strand.sequence, self.strands))
+		for i in range(0, len(self.strands)):
+			self.seqconcatenation = self.seqconcatenation + separator + (self.strands[i]).sequence
+		return self.seqconcatenation
+			
 	def get_name(self):
 		"""
 		Returns the names of the strands, concatenated together; can be used 
 		as a unique identifier for this Permutation within the ensemble.
 		"""
-		pass
-	
+		for i in range(0, gotlen(self.strands)):
+			self.nameconcatenation = self.nameconcatenation + (self.strands[i]).name
+		return self.nameconcatenation
+		
 class Structure:
 	"""Represents the secondary structure of a given strand"""
 	

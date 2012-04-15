@@ -117,6 +117,14 @@ for line in file:
 	
 file.close()
 
-# creates a permutation of strand list for later
-classes.Permutation(strands_list)
+# test of creating single permutation
+alpha = classes.Permutation(strands_list)
+print alpha.get_concatamer("")
+
+# test of creating permutation list
+beta = classes.Permutations(strands_list)
+for element in beta.permutations():
+	print element.get_concatamer("")
+
+
 
