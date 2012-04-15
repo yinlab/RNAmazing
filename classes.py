@@ -7,6 +7,7 @@ class Strand:
     	"""
     	pass
     
+    #don't need this anymore... in the master.py file
     def correct_type (self, sequence):
 		"""
 		iteratively check if all letters in list are a, t (or u), c, or g, making sure to check materia
