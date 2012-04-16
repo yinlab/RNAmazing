@@ -3,7 +3,9 @@ class Visualize:
 	Takes structure and outputs it as visualization
 	"""
 	def viz_bracket(self, sstr, seq):
-		"""Returns string of secondary structure in dot-bracket notation"""
+		"""
+		Returns string of secondary structure in dot-bracket notation
+		"""
 		output = ""
 		#fill dots
 		for i in seq:
@@ -17,6 +19,9 @@ class Visualize:
 		return output
 
 	def viz_circle(self, sstr, seq):
+		"""
+		Returns bmp of chord secondary structure graph
+		"""
 		import math
 		from Tkinter import *
 
@@ -65,5 +70,8 @@ class Visualize:
 		"""Return bmp of planar secondary structure graph"""
 		pass
 		
-	def viz_arc(self,structure):
-		"""Return bmp of arc graph"""
+	
+
+
+
+
