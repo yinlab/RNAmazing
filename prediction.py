@@ -71,7 +71,7 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 		pair = set([ni, nj])
 		if pair == set(['A', 'T']): return 1
 		elif pair == set(['C', 'G']): return 1
-		elif pair == set(['G', 'T']): return 0.5
+		elif pair == set(['G', 'T']): return 1
 		else: return 0
 	
 	def generate_score_matrix(self):
