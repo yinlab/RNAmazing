@@ -1,1 +1,1 @@
-{strand1;rna;acgugccacgauucaacguggcacag}
+{strand1;dna;atatataaaattt}

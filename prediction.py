@@ -57,7 +57,7 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 		"""
 		self.permutation = permutation
 		if(score_matrix == None):
-			(seq,l) = self.get_sequence()
+			(self.seq,l) = self.get_sequence()
 			score_matrix = ScoreMatrix(l,l)
 		
 		self.score_matrix = score_matrix
@@ -65,7 +65,7 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 		
 	def get_sequence(self):
 		self.seq = self.permutation.get_concatamer()
-		return (self.seq, len(self.seq))
+		return (seq, len(seq))
 	
 	def delta(self,ni, nj):
 		pair = set([ni,nj])
@@ -82,7 +82,7 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 		
 		# populate main diagonal of score matrix with zeroes
 		self.score_matrix.set(0,0,0)
-		for i in range(0,l):
+		for i in range(1,l):
 			self.score_matrix.set(i,i,0)
 			self.score_matrix.set(i,i-1,0)
 		

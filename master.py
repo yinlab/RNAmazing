@@ -158,6 +158,8 @@ print "Pair list: "
 print sstr
 print "Sequence: " + seq
 
+for i in range (1,5):
+	print i
 
 
 # pass output to visualization module
