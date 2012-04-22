@@ -71,6 +71,9 @@ class ScoreMatrix:
 		"""Removes both a row and a column at k"""
 		pass
 
+	def __str__(self):
+		return str(self.matrix)
+
 class Permutation:
 	"""Represents a single circular permutation of named strands"""
 	
