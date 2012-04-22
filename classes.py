@@ -3,7 +3,6 @@ import sys
 import classes
 
 class Strand:
-
 	def __init__ (self, material, name, sequence):
 		"""
 		specifies whether DNA or RNA, gives name, and gives sequence
