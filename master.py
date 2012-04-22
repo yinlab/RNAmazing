@@ -134,7 +134,7 @@ print "Testing Nussinov prediction algorithm..."
 list_of_nussinov_structures = []
 
 # iterates over all possible permutations, printing tests along the way
-for element in beta.permutations():
+for element in multiple_permutations.permutations():
 	print "Permutation: "+element.get_name()
 	print element.get_concatamer("")
 	nussinov = prediction.NussinovPredictor(element,None)
@@ -154,13 +154,16 @@ sstr = best_nussinov.get_pairs()
 seq = best_nussinov.get_sequence()
 
 print "Best structure..."
-print "Pair list: " + sstr
+print "Pair list: "
+print sstr
 print "Sequence: " + seq
+
 
 
 # pass output to visualization module
 vis = visualization.Visualize()
-print "In dot-paren notation: " + vis.viz_bracket(sstr, seq)
+print "In dot-paren notation: " 
+print vis.viz_bracket(sstr, seq)
 vis.viz_circle(sstr, seq)
 
 
