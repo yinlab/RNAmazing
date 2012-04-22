@@ -11,10 +11,11 @@ import sys
 import fnmatch
 import re
 import string
-import prediction
 
 # imports .py files we have created
 import classes
+import prediction
+import visualization
 
 # checks validity of command line arguments and file to be imported
 if (len(sys.argv) != 2):
@@ -126,12 +127,43 @@ print alpha.get_concatamer("")
 print "Testing multiple permutations..."
 
 beta = classes.Permutations(strands_list)
+
+
+# creates a list of all possible nussinov structures
+list_of_nussinov_structures = []
+
 for element in beta.permutations():
 	print "Permutation: "+element.get_name()
 	print element.get_concatamer("")
 	nussinov = prediction.NussinovPredictor(element,None)
 	nussinov.predict_structure()
-	print nussinov.to_structure()
+	list_of_nussinov_structures.append(nussinov.to_structure())
+	print (nussinov.to_structure()).get_pairs()
+
+def len_fun(x):
+	return len(x.get_pairs())
+
+# way for doing multiple strand predictor
+list_of_nussinov_scores = map(len_fun, list_of_nussinov_structures)
+index_of_best = list_of_nussinov_scores.index(max(list_of_nussinov_scores))
+best_nussinov = list_of_nussinov_structures.pop(index_of_best)
+
+print "Best structure..."
+print best_nussinov.get_pairs()
+
+print best_nussinov.get_pairs()
+print best_nussinov.get_sequence()
+
+
+vis = visualization.Visualize()
+sstr = best_nussinov.get_pairs()
+seq = best_nussinov.get_sequence()
+
+vis.viz_bracket(sstr, seq)
+#vis.viz_circle(sstr, seq)
+
+
+
 
 
 
