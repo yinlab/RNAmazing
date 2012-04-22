@@ -37,7 +37,7 @@ strands_list = []
 # iterates over all strands in file
 # strands are of type {name;material;sequence} separated by new lines
 for line in file:
-	
+
 	# re-formats and checks the input
 	strand = string.rstrip(string.upper(line))
 	strand_length = len(strand)
@@ -115,23 +115,25 @@ for line in file:
 	
 	# generates a strand object of the input and adds it to strand list
 	strand_obj = classes.Strand(material, strand_name, sequence)
-	strands_list.append(strand_obj)
-	
+	strands_list.append(strand_obj)	
 file.close()
 
 # test of creating single permutation
-alpha = classes.Permutation(strands_list)
-print alpha.get_concatamer("")
+print "Testing single permutation..."
+first_permutation = classes.Permutation(strands_list)
+print first_permutation.get_concatamer("")
 
 # test of creating permutation list
 print "Testing multiple permutations..."
+multiple_permutations = classes.Permutations(strands_list)
 
-beta = classes.Permutations(strands_list)
-
+# testing Nussinov prediction
+print "Testing Nussinov prediction algorithm..."
 
 # creates a list of all possible nussinov structures
 list_of_nussinov_structures = []
 
+# iterates over all possible permutations, printing tests along the way
 for element in beta.permutations():
 	print "Permutation: "+element.get_name()
 	print element.get_concatamer("")
@@ -140,27 +142,26 @@ for element in beta.permutations():
 	list_of_nussinov_structures.append(nussinov.to_structure())
 	print (nussinov.to_structure()).get_pairs()
 
+# determining best case scenario of the multiple permutations
 def len_fun(x):
 	return len(x.get_pairs())
-
-# way for doing multiple strand predictor
 list_of_nussinov_scores = map(len_fun, list_of_nussinov_structures)
 index_of_best = list_of_nussinov_scores.index(max(list_of_nussinov_scores))
 best_nussinov = list_of_nussinov_structures.pop(index_of_best)
 
-print "Best structure..."
-print best_nussinov.get_pairs()
-
-print best_nussinov.get_pairs()
-print best_nussinov.get_sequence()
-
-
-vis = visualization.Visualize()
+# generates variables to represent the secondary structure and sequence of output
 sstr = best_nussinov.get_pairs()
 seq = best_nussinov.get_sequence()
 
-vis.viz_bracket(sstr, seq)
-#vis.viz_circle(sstr, seq)
+print "Best structure..."
+print "Pair list: " + sstr
+print "Sequence: " + seq
+
+
+# pass output to visualization module
+vis = visualization.Visualize()
+print "In dot-paren notation: " + vis.viz_bracket(sstr, seq)
+vis.viz_circle(sstr, seq)
 
 
 
