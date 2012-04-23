@@ -99,11 +99,11 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 				max([gamma(i, k) + gamma(k + 1, j) for k in range(i+1, j)] if (i+1!=j)  else [0])
 			)
 		
-		for n in range(0, l):
-			for j in range(n, l):
-				#i = j - n + 1
-				i = j - n
-				self.score_matrix.set(i, j, gamma(i, j))
+		for n in range(1, l+1):
+			for j in range(2, l+1):
+				i = j - n + 1
+				#i = j - n
+				self.score_matrix.set(i-1, j-1, gamma(i-1, j-1))
 		
 	def traceback(self):
 		"""

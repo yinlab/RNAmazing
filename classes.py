@@ -14,7 +14,6 @@ class Strand:
 
 class Permutations:
 	""" can be implemented as another dict or set """
-
 	# so there is some redundancy in this, but it will have to do for now
 	def __init__(self, lis):
 		self.permutation_list = itertools.permutations(lis)
