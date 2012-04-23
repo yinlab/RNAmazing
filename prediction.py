@@ -91,18 +91,15 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 			return self.delta(seq[i], seq[j])
 			
 		
-		
-		# I don't really know how self-binding happens in python...
-		#score_matrix = self.score_matrix
-		
 		def gamma(i, j):
 			if(self.score_matrix.has(i, j)): return self.score_matrix.get(i, j) 
 			return max(gamma(i + 1, j),
 				gamma(i, j - 1),
 				gamma(i + 1, j - 1) + delta(i, j),
-				max(map(lambda k: gamma(i, k) + gamma(k + 1, j), range(i, j))))
+				max([gamma(i, k) + gamma(k + 1, j) for k in range(i+1, j)] if (i+1!=j)  else [0])
+			)
 		
-		for n in range(1, l):
+		for n in range(0, l):
 			for j in range(n, l):
 				#i = j - n + 1
 				i = j - n

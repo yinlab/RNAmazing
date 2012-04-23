@@ -30,9 +30,9 @@ print nussinov.traceback()
 #vis = Visualize()
 #vis.viz_circle(sstr, seq)
 
-print "\nZuker:\n"
-zuker = ZukerPredictor(perm,None)
-
-zuker.generate_score_matrix()
-print nussinov.to_score_matrix().matrix
-print nussinov.traceback()
+#print "\nZuker:\n"
+#zuker = ZukerPredictor(perm,None)
+#
+#zuker.generate_score_matrix()
+#print nussinov.to_score_matrix().matrix
+#print nussinov.traceback()
