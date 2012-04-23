@@ -69,9 +69,9 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 	
 	def delta(self, ni, nj):
 		pair = set([ni, nj])
-		if pair == set(['A', 'T']): return 1
+		if (pair == set(['A', 'T'])) | (pair == set(['A', 'U'])): return 1
 		elif pair == set(['C', 'G']): return 1
-		elif pair == set(['G', 'T']): return 1
+		elif (pair == set(['G', 'T'])) | (pair == set(['G', 'U'])): return 1
 		else: return 0
 	
 	def generate_score_matrix(self):
@@ -88,7 +88,10 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 		
 		
 		def delta(i, j):
-			return self.delta(seq[i], seq[j])
+			if self.delta(seq[i], seq[j]) != 0:
+				return self.delta(seq[i], seq[j])
+			else:
+				return 0
 			
 		
 		def gamma(i, j):
@@ -96,10 +99,12 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 			return max(gamma(i + 1, j),
 				gamma(i, j - 1),
 				gamma(i + 1, j - 1) + delta(i, j),
-				max([gamma(i, k) + gamma(k + 1, j) for k in range(i+1, j)] if (i+1!=j)  else [0])
+#				max([gamma(i, k) + gamma(k + 1, j) for k in range(i+1, j)] if (i+1!=j)  else [0])
+				max([gamma(i, k) + gamma(k + 1, j) for k in range(i, j)])
+
 			)
 		
-		for n in range(0, l):
+		for n in range(1, l):
 			for j in range(n, l):
 				#i = j - n + 1
 				i = j - n
