@@ -1,0 +1,20 @@
+CS51 Final Project:  RNAmazing:
+
+
+Running from the command line:
+
+execute:
+	python master.py [.txt file] [visualization type]
+	
+where:
+	⁃	the .txt file has DNA/RNA strands in the format {strand_name;material;sequence}
+	⁃	if the .txt file contains more than one sequence each sequence should be separated by a hard return
+	⁃	material can be either RNA or DNA
+	⁃	sequences of DNA can only consist of A, T, C, and G
+	⁃	sequence of RNA can only consist of A, U, C, and G
+	⁃	the visualization type can either be circle, arc, or dot paren
+	⁃	the case of text doesn't matter (i.e.  DNA == dna)
+
+** see example.txt for the format of the .txt file
+
+
