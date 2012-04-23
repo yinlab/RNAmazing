@@ -139,8 +139,7 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 						if gamma(i, j) == gamma(i, k) + gamma(k + 1, j):
 							trace(i, k)
 							trace(k + 1, j)
-		trace(0,self.score_matrix.get_width()-1)
-		self.pairs = Structure(pairs, self.seq)
+							break
 
 		trace(0, self.score_matrix.get_width() - 1)
 		self.pairs = Structure(pairs, self.seq)
