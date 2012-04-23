@@ -32,8 +32,8 @@ class Visualize:
 		master.resizable(width=0, height=0)
 
 		# Create canvas
-		canvasw = len(seq)*8
-		canvash = len(seq)*2.25
+		canvasw = min((len(seq)*8),1024)
+		canvash = min((len(seq)*2.25),768)
 		w = Canvas(master, width = canvasw, height = canvash)
 		w.pack()
 
