@@ -4,8 +4,8 @@ from visualization import Visualize
 import sys, csv
 
 print "Permutation:\n"
-#perm = Permutation([Strand("DNA","A","ACGUGCCACGAUUCAACGUGGCACAG")])
-perm = Permutation([Strand("DNA","A","GGGAAAUCC")])
+perm = Permutation([Strand("DNA","A","ACGUGCCACGAUUCAACGUGGCACAG")])
+#perm = Permutation([Strand("DNA","A","GGGAAAUCC")])
 
 print perm.get_concatamer()
 
