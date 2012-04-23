@@ -18,12 +18,18 @@ import prediction
 import visualization
 
 # checks validity of command line arguments and file to be imported
-if (len(sys.argv) != 2):
-	print "Usage: python master.py filename.txt"
+if (len(sys.argv) != 3):
+	print "Usage: python master.py filename.txt visualization"
+	sys.exit()
 else:
 	file = sys.argv[1]
+	third_arg = string.upper(sys.argv[2])
+	if (third_arg != "CIRCLE") & (third_arg != "DOTPAREN"):
+		print "Usage: possible visualization types include dotparen and circle"
+		sys.exit()
 	if not(fnmatch.fnmatch(file, '*.txt')):
 		print "File should be of type '.txt'"
+		sys.exit()
 	else:
 		try:
 			file = open(sys.argv[1])
@@ -158,15 +164,14 @@ print "Pair list: "
 print sstr
 print "Sequence: " + seq
 
-for i in range (1,5):
-	print i
-
-
 # pass output to visualization module
+visualization_type = string.upper(sys.argv[2])
 vis = visualization.Visualize()
-print "In dot-paren notation: " 
-print vis.viz_bracket(sstr, seq)
-vis.viz_circle(sstr, seq)
+if visualization_type == "DOTPAREN":
+	print "In dot-paren notation: " 
+	print vis.viz_bracket(sstr, seq)
+elif visualization_type == "CIRCLE":
+	vis.viz_circle(sstr, seq)
 
 
 
