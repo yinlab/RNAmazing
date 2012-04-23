@@ -18,6 +18,49 @@ class Visualize:
 			output = output[:y] + ")" + output[y+1:]
 		return output
 
+
+	def viz_arc(self,sstr,seq):
+		"""
+		Returns bmp of arc secondary structure graph
+		"""
+		import math
+		from Tkinter import * 
+
+		# Create Tk instance
+		master = Tk()
+		master.title("Arc Diagram")
+		master.resizable(width=0, height=0)
+
+		# Create canvas
+		canvasw = 600
+		canvash = 200
+		w = Canvas(master, width = canvasw, height = canvash)
+		w.pack()
+
+		# Draw line and tick marks
+		w.create_line(50,150,550,150)
+		l = len(seq)
+		spacer = 500/(l-1)
+		coords = []
+
+		for i,base in enumerate(seq):
+			x = (spacer * i) + 50
+			y = 150
+			w.create_line(x, y+4, x, y-4)
+			w.create_text(x, y+16 , text = base)
+			coords.append({"x":x, "y": y})
+
+		# Draw segments between bases
+		for base1, base2 in sstr:
+			w.create_arc(coords[base1]["x"], coords[base1]["y"] - 64,
+				     coords[base2]["x"], coords[base2]["y"] + 64,
+				      start = 0, extent = 180, style = "arc")
+
+
+		# Enter main event loop
+		mainloop()	
+
+
 	def viz_circle(self, sstr, seq):
 		"""
 		Returns bmp of chord secondary structure graph

@@ -24,8 +24,8 @@ if (len(sys.argv) != 3):
 else:
 	file = sys.argv[1]
 	third_arg = string.upper(sys.argv[2])
-	if (third_arg != "CIRCLE") & (third_arg != "DOTPAREN"):
-		print "Usage: possible visualization types include dotparen and circle"
+	if (third_arg != "CIRCLE") & (third_arg != "DOTPAREN") & (third_arg != "ARC"):
+		print "Usage: possible visualization types include DOTPAREN CIRCLE ARC"
 		sys.exit()
 	if not(fnmatch.fnmatch(file, '*.txt')):
 		print "File should be of type '.txt'"
@@ -172,6 +172,8 @@ if visualization_type == "DOTPAREN":
 	print vis.viz_bracket(sstr, seq)
 elif visualization_type == "CIRCLE":
 	vis.viz_circle(sstr, seq)
+elif visualization_type == "ARC":
+	vis.viz_arc(sstr, seq)
 
 
 
