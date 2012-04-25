@@ -157,12 +157,18 @@ class Visualize:
 				regions = []
 				for index,entry in enumerate(seq_list):
 					if entry["pair"] != -1 and entry["mark"] = False:
-						regions.append({"start1": entry["base"], "end2": entry["pair"]})
+						regions.append({"start1": entry["base"], 
+								"end2": entry["pair"]})
 						entry["mark"] = True
 						n = entry["pair"]
 						seq_list[n]["mark"] = True
 						for j in seq_list[index::n]:
-							pass
+							if j["pair"] == n-1:
+								j["mark"] = True
+								n = j["pair"]
+								seq_list[n]["mark"] = True
+							else:
+								break
 						
 
 			def loops (self): 
@@ -170,6 +176,11 @@ class Visualize:
 				Define loop regions
 				"""
 				pass
+
+			def connection (self):
+				"""
+				Connects loops to stems and other loops
+				"""
 
 			def plot (self):
 				"""
@@ -181,3 +192,4 @@ class Visualize:
 				"""
 				Output to canvas
 				"""
+				pass
