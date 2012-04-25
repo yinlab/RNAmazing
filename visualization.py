@@ -124,5 +124,60 @@ class Visualize:
 		
 	def viz_planar(self,seq,sstr):
 		"""Return bmp of planar secondary structure graph"""
-		pass
 
+		import math
+		from Tkinter import * 
+		
+		# Create Tk instance
+		master = Tk()
+		master.title("Arc Diagram")
+		master.resizable(width=0, height=0)
+
+		# Create canvas
+		canvasw = 600
+		canvash = 200
+		w = Canvas(master, width = canvasw, height = canvash)
+		w.pack()
+		
+		class RNA:
+			def __init__ (self, seq, sstr):
+				"""
+				Construct initial base + pair list
+				"""
+				seq_list = []
+				for i in seq:
+					seq_list.append({"base": i, "pair": -1, "mark" = False})
+					for b1, b2 in sstr:
+						seq_list[b1]["pair"] = b2
+						
+			def regions (self):
+				"""
+				Define stem regions
+				"""
+				regions = []
+				for index,entry in enumerate(seq_list):
+					if entry["pair"] != -1 and entry["mark"] = False:
+						regions.append({"start1": entry["base"], "end2": entry["pair"]})
+						entry["mark"] = True
+						n = entry["pair"]
+						seq_list[n]["mark"] = True
+						for j in seq_list[index::n]:
+							pass
+						
+
+			def loops (self): 
+				"""
+				Define loop regions
+				"""
+				pass
+
+			def plot (self):
+				"""
+				Assign x, y coordinate values to all bases
+				"""
+				pass
+
+			def draw (self):
+				"""
+				Output to canvas
+				"""
