@@ -12,6 +12,10 @@ class Strand:
 		self.material = material
 		self.name = name
 		self.sequence = sequence
+		
+	def update_seq (self, new_seq):
+		self.sequence = new_seq
+		return self
 
 class Permutations:
 	""" can be implemented as another dict or set """
@@ -123,9 +127,17 @@ class Permutation:
 		"""
 		Updates the instance of the strand that is being updated by a substitution
 		"""
+		
+		# tries to find strand in question to be updated
+		try:
+			strands_index = (self.namelist).index(string.upper(strand_name))
+		except ValueError:
+			print "This strand does not exist"
+			sys.exit()
+			
 		# checks to make sure base substitution is valid
 		sub = string.upper(new_base)
-		if (strands[strands_index]).material == "DNA":
+		if (self.strands[strands_index]).material == "DNA":
 			if (sub != 'A') & (sub != 'T') & (sub != 'C') & (sub != 'G'):
 				print "ERROR:  DNA sequences can only consist of A, T, C, & G"
 				sys.exit()
@@ -134,44 +146,51 @@ class Permutation:
 				print "ERROR:  RNA sequences can only consist of A, U, C, & G"
 				sys.exit()
 		
-		# tries to find strand in question to be updated
+
+		# performs update to strand
+		strand_as_list = list((self.strands[strands_index]).sequence)
+		print strand_as_list
+		print (self.strands[strands_index]).sequence
+		
 		try:
-			strands_index = (self.strands).index(string.upper(strand_name))
-		except ValueError:
-			print "This strand does not exist"
+			strand_as_list[index] = sub		
+		except IndexError:
+			print "ERROR:  Non-valid index value"
 			sys.exit()
+			
+		strand_as_string = "".join(strand_as_list)
+		print strand_as_string
+		print self.strands[strands_index].sequence
+		self.strands[strands_index] = (self.strands[strands_index]).update_seq(strand_as_string)
+		print (self.strands[strands_index]).sequence
 		
-		strand_as_list = list(self.strands[strands_index])
-
-
-
-		
-		strand_as_list[index] = string.upper(new_base)		
-
-
-
-		self.strands[strands_index] = "".join(strand_as_list)
-				
+		return self
 		
 class Structure:
 	"""Represents the secondary structure of a given strand"""
 	
-	def __init__(self, pairs, sequence):
+	def __init__(self, pairs, permutation):
 		"""Builds an initial structure from a list of (int,int) tuples"""
 		self.pairs = pairs
-		self.sequence = sequence
+		self.permutation = permutation
 		
 	def __str__(self):
 		"""Prints an informal string-based representation of the structure"""
 		return str(self.pairs)
 	
+	def get_permutation(self):
+		"""Returns permutation object"""
+		return self.permutation
+		
 	def get_sequence(self):
-		return self.sequence
+		"""Returns concatenated sequence of Permutation"""
+		return (self.permutation).get_concatamer()
 	
 	def get_pairs(self):
 		"""Returns the structure as a list of (int,int) tuples"""
 		return self.pairs	
 	
+	# what is this?
 	def __iter__(self):
 		for pair in self.pairs:
 			yield pair

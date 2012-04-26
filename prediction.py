@@ -144,7 +144,9 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 							break
 
 		trace(0, self.score_matrix.get_width() - 1)
-		self.pairs = Structure(pairs, self.seq)
+		
+		#self.pairs = Structure(pairs, self.seq)
+		self.pairs = pairs
 		return self.pairs
 		
 	def predict_structure(self):
@@ -158,7 +160,8 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 		"""
 		Returns the predicted secondary structure calculated by #predict_structure
 		"""
-		return self.pairs
+		self.structure_obj = Structure(self.pairs, self.permutation)
+		return self.structure_obj
 		
 	def to_score_matrix(self):
 		"""
@@ -168,7 +171,7 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 
 
 class Recalculation:
-	def __init__(self, scorematrix, base, permutation)
+	def __init__(self, scorematrix, base, permutation):
 		"""
 		Implements real-time recalculation of Nussinov predictor for simple substitutions, taking
 		in the original scorematrix, the number of the base being updated, and the permutation
