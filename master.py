@@ -12,10 +12,11 @@ import fnmatch
 import re
 import string
 
+
 # imports .py files we have created
 import classes
 import prediction
-#import visualization
+import visualization
 
 # checks validity of command line arguments and file to be imported
 if (len(sys.argv) != 3):
@@ -173,6 +174,17 @@ print "Sequence: " + seq
 print "Testing simple substitutions..."
 print "Original sequence:  " + seq
 
+# pass output to visualization module
+visualization_type = string.upper(sys.argv[2])
+vis = visualization.Visualize()
+if visualization_type == "DOTPAREN":
+	print "In dot-paren notation: " 
+	print vis.viz_bracket(sstr, seq)
+elif visualization_type == "CIRCLE":
+	vis.viz_circle(sstr, seq)
+elif visualization_type == "ARC":
+	vis.viz_arc(sstr, seq)
+
 
 # gets permutation object from structure object and overall index of the change
 #best_perm = best_nussinov.get_permutation()
@@ -182,22 +194,40 @@ print "Original sequence:  " + seq
 #print "Overall index: " 
 #print index
 
+# gets user input for any updates
+option = "q"
+while (option != "y") & (option != "n"):
+	option = raw_input("Would you like to make an update to your structure? [y/n]: ")
+else:
+	if option == "y":
+		strand_name = raw_input("Which strand would you like to update?  ")
+		strand_index = (raw_input("Which zero-indexed base on this strand would you like to modify?  "))
+		new_base = raw_input("What base would you like to modify " + strand_name + "[" + strand_index + "] to?  " )
+		strand_index = int(strand_index)
+	elif option == "n":
+		sys.exit()
+
+# sets up environment for real-time recalculation
 best_perm = best_nussinov.get_permutation()
-new_struct = prediction.Recalculation(best_nussinov_score_matrix, best_perm, "strand1", 2, 'a')
+new_struct = prediction.Recalculation(best_nussinov_score_matrix, best_perm, strand_name, strand_index, new_base)
 new_struct.predict_structure()
 print (new_struct.to_structure()).get_pairs()
 
+sstr = (new_struct.to_structure()).get_pairs()
+seq = (new_struct.to_structure()).get_sequence()
 
 # pass output to visualization module
-##visualization_type = string.upper(sys.argv[2])
-##vis = visualization.Visualize()
-##if visualization_type == "DOTPAREN":
-##	print "In dot-paren notation: " 
-##	print vis.viz_bracket(sstr, seq)
-##elif visualization_type == "CIRCLE":
-##	vis.viz_circle(sstr, seq)
-##elif visualization_type == "ARC":
-##	vis.viz_arc(sstr, seq)
+visualization_type = string.upper(sys.argv[2])
+vis = visualization.Visualize()
+if visualization_type == "DOTPAREN":
+	print "In dot-paren notation: " 
+	print vis.viz_bracket(sstr, seq)
+elif visualization_type == "CIRCLE":
+	vis.viz_circle(sstr, seq)
+elif visualization_type == "ARC":
+	vis.viz_arc(sstr, seq)
+
+
 
 
 #./master.py fsdfas
