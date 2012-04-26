@@ -97,18 +97,15 @@ class Permutation:
 			self.namelist.append(element.name)
 		return self.namelist
 		
-	# what was the purpose of this guy again?
 	def get_strands(self):
 		"""Returns a list of Strands, in order"""
-		pass
+		return self.strands
 		
 	def get_concatamer(self, separator=""):
 		"""
 		Returns a string containing the sequences concatenated together,
 		separated by an optional separator
 		"""
-		#self.seqconcatenation = 
-		#return self.seqconcatenation
 		return separator.join(map(lambda strand: strand.sequence, self.strands))
 		
 	def get_name(self, separator=""):
@@ -116,9 +113,6 @@ class Permutation:
 		Returns the names of the strands, concatenated together; can be used 
 		as a unique identifier for this Permutation within the ensemble.
 		"""
-		#		for i in range(0, len(self.strands)):
-		#			self.nameconcatenation = self.nameconcatenation + (self.strands[i]).name
-		#		return self.nameconcatenation
 		return separator.join(map(lambda strand: strand.name, self.strands))
 		
 	
@@ -126,11 +120,10 @@ class Permutation:
 	def simple_transformation(self, strand_name, index, new_base):
 		"""
 		Updates the instance of the strand that is being updated by a substitution
-		"""
-		
+		"""		
 		# tries to find strand in question to be updated
 		try:
-			strands_index = (self.namelist).index(string.upper(strand_name))
+			strands_index = (self.get_names()).index(string.upper(strand_name))
 		except ValueError:
 			print "This strand does not exist"
 			sys.exit()
@@ -144,14 +137,10 @@ class Permutation:
 		elif (strands[strands_index]).material == "RNA":
 			if (sub != 'A') & (sub != 'U') & (sub != 'C') & (sub != 'G'):
 				print "ERROR:  RNA sequences can only consist of A, U, C, & G"
-				sys.exit()
-		
+				sys.exit()	
 
 		# performs update to strand
 		strand_as_list = list((self.strands[strands_index]).sequence)
-		print strand_as_list
-		print (self.strands[strands_index]).sequence
-		
 		try:
 			strand_as_list[index] = sub		
 		except IndexError:
@@ -159,12 +148,16 @@ class Permutation:
 			sys.exit()
 			
 		strand_as_string = "".join(strand_as_list)
-		print strand_as_string
-		print self.strands[strands_index].sequence
 		self.strands[strands_index] = (self.strands[strands_index]).update_seq(strand_as_string)
-		print (self.strands[strands_index]).sequence
-		
-		return self
+
+		# calculates overall index of change
+		overall_index = 0
+		for i in range(0, strands_index):
+			overall_index += len((self.strands[i]).sequence)
+		overall_index += index
+
+		# returns new permutation object with modifications
+		return (self, overall_index)
 		
 class Structure:
 	"""Represents the secondary structure of a given strand"""
@@ -195,8 +188,7 @@ class Structure:
 		for pair in self.pairs:
 			yield pair
 		pass
-
-		
+	
 class State:
 	"""
 	Represents a state of the predictor which can be more quickly mutated by single-base
@@ -230,15 +222,3 @@ class State:
 	def get_as_tuples(self):
 		"""Returns list of (Permutation, ScoreMatrix) tuples, as passed to the initiator"""
 		pass
-		
-
-class Transformation:
-	"""
-	Performs a single base transformation on an Strand
-	"""
-	
-	def transform(self, old):
-		"""
-		Accepts the old Strand and returns a new one, with the transformation
-		applied.
-		"""

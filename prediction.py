@@ -171,15 +171,26 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 
 
 class Recalculation:
-	def __init__(self, scorematrix, base, permutation):
+	def __init__(self, scorematrix, original_permutation, strand_name, index, base):
 		"""
 		Implements real-time recalculation of Nussinov predictor for simple substitutions, taking
 		in the original scorematrix, the number of the base being updated, and the permutation
 		to which we are performing the update
 		"""
 		self.score_matrix = scorematrix
-		self.change_index = base
+		(self.new_permutation, self.change_index) = original_permutation.simple_transformation(strand_name,index,base)
 		
+	def delta(self, ni, nj):
+		pair = set([ni, nj])
+		if (pair == set(['A', 'T'])) | (pair == set(['A', 'U'])): return 1
+		elif pair == set(['C', 'G']): return 1
+		elif (pair == set(['G', 'T'])) | (pair == set(['G', 'U'])): return 1
+		else: return 0
+
+	def get_sequence(self):
+		self.seq = self.new_permutation.get_concatamer()
+		return (self.seq, len(self.seq))	
+	
 	
 	def generate_score_matrix(self):
 		"""
@@ -195,11 +206,10 @@ class Recalculation:
 				return 0
 
 		def gamma(i, j):
-			#if(self.score_matrix.has(i, j)): return self.score_matrix.get(i, j) 
+			if(self.score_matrix.has(i, j)): return self.score_matrix.get(i, j) 
 			return max(gamma(i + 1, j),
 				gamma(i, j - 1),
 				gamma(i + 1, j - 1) + delta(i, j),
-#				max([gamma(i, k) + gamma(k + 1, j) for k in range(i+1, j)] if (i+1!=j)  else [0])
 				max([gamma(i, k) + gamma(k + 1, j) for k in range(i, j)])
 			)
 
@@ -254,7 +264,8 @@ class Recalculation:
 		"""
 		Returns the predicted secondary structure calculated by #predict_structure
 		"""
-		return self.pairs
+		self.structure_obj = Structure(self.pairs, self.new_permutation)
+		return self.structure_obj
 		
 	def to_score_matrix(self):
 		"""
