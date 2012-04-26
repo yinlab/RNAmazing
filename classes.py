@@ -1,6 +1,7 @@
 import itertools
 import sys
 import classes
+import string
 
 class Strand:
 	def __init__ (self, material, name, sequence):
@@ -115,7 +116,42 @@ class Permutation:
 		#			self.nameconcatenation = self.nameconcatenation + (self.strands[i]).name
 		#		return self.nameconcatenation
 		return separator.join(map(lambda strand: strand.name, self.strands))
+		
+	
+	# don't think we should be using print or sys.exit but we'll see
+	def simple_transformation(self, strand_name, index, new_base):
+		"""
+		Updates the instance of the strand that is being updated by a substitution
+		"""
+		# checks to make sure base substitution is valid
+		sub = string.upper(new_base)
+		if (strands[strands_index]).material == "DNA":
+			if (sub != 'A') & (sub != 'T') & (sub != 'C') & (sub != 'G'):
+				print "ERROR:  DNA sequences can only consist of A, T, C, & G"
+				sys.exit()
+		elif (strands[strands_index]).material == "RNA":
+			if (sub != 'A') & (sub != 'U') & (sub != 'C') & (sub != 'G'):
+				print "ERROR:  RNA sequences can only consist of A, U, C, & G"
+				sys.exit()
+		
+		# tries to find strand in question to be updated
+		try:
+			strands_index = (self.strands).index(string.upper(strand_name))
+		except ValueError:
+			print "This strand does not exist"
+			sys.exit()
+		
+		strand_as_list = list(self.strands[strands_index])
 
+
+
+		
+		strand_as_list[index] = string.upper(new_base)		
+
+
+
+		self.strands[strands_index] = "".join(strand_as_list)
+				
 		
 class Structure:
 	"""Represents the secondary structure of a given strand"""

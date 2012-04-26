@@ -176,7 +176,10 @@ elif visualization_type == "ARC":
 	vis.viz_arc(sstr, seq)
 
 
-
-
+#./master.py fsdfas
+def main():
+	
+if __name__ == '__main__':
+	main()
 
 
