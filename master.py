@@ -11,18 +11,25 @@ import sys
 import fnmatch
 import re
 import string
-import prediction
 
 # imports .py files we have created
 import classes
+import prediction
+import visualization
 
 # checks validity of command line arguments and file to be imported
-if (len(sys.argv) != 2):
-	print "Usage: python master.py filename.txt"
+if (len(sys.argv) != 3):
+	print "Usage: python master.py filename.txt visualization"
+	sys.exit()
 else:
 	file = sys.argv[1]
+	third_arg = string.upper(sys.argv[2])
+	if (third_arg != "CIRCLE") & (third_arg != "DOTPAREN") & (third_arg != "ARC"):
+		print "Usage: possible visualization types include DOTPAREN CIRCLE ARC"
+		sys.exit()
 	if not(fnmatch.fnmatch(file, '*.txt')):
 		print "File should be of type '.txt'"
+		sys.exit()
 	else:
 		try:
 			file = open(sys.argv[1])
@@ -36,7 +43,7 @@ strands_list = []
 # iterates over all strands in file
 # strands are of type {name;material;sequence} separated by new lines
 for line in file:
-	
+
 	# re-formats and checks the input
 	strand = string.rstrip(string.upper(line))
 	strand_length = len(strand)
@@ -114,24 +121,62 @@ for line in file:
 	
 	# generates a strand object of the input and adds it to strand list
 	strand_obj = classes.Strand(material, strand_name, sequence)
-	strands_list.append(strand_obj)
-	
+	strands_list.append(strand_obj)	
 file.close()
 
 # test of creating single permutation
-alpha = classes.Permutation(strands_list)
-print alpha.get_concatamer("")
+print "Testing single permutation..."
+first_permutation = classes.Permutation(strands_list)
+print first_permutation.get_concatamer("")
 
 # test of creating permutation list
 print "Testing multiple permutations..."
+multiple_permutations = classes.Permutations(strands_list)
 
-beta = classes.Permutations(strands_list)
-for element in beta.permutations():
+# testing Nussinov prediction
+print "Testing Nussinov prediction algorithm..."
+
+# creates a list of all possible nussinov structures
+list_of_nussinov_structures = []
+
+# iterates over all possible permutations, printing tests along the way
+for element in multiple_permutations.permutations():
 	print "Permutation: "+element.get_name()
 	print element.get_concatamer("")
 	nussinov = prediction.NussinovPredictor(element,None)
 	nussinov.predict_structure()
-	print nussinov.to_structure()
+	list_of_nussinov_structures.append(nussinov.to_structure())
+	print (nussinov.to_structure()).get_pairs()
+
+# determining best case scenario of the multiple permutations
+def len_fun(x):
+	return len(x.get_pairs())
+list_of_nussinov_scores = map(len_fun, list_of_nussinov_structures)
+index_of_best = list_of_nussinov_scores.index(max(list_of_nussinov_scores))
+best_nussinov = list_of_nussinov_structures.pop(index_of_best)
+
+# generates variables to represent the secondary structure and sequence of output
+sstr = best_nussinov.get_pairs()
+seq = best_nussinov.get_sequence()
+
+print "Best structure..."
+print "Pair list: "
+print sstr
+print "Sequence: " + seq
+
+# pass output to visualization module
+visualization_type = string.upper(sys.argv[2])
+vis = visualization.Visualize()
+if visualization_type == "DOTPAREN":
+	print "In dot-paren notation: " 
+	print vis.viz_bracket(sstr, seq)
+elif visualization_type == "CIRCLE":
+	vis.viz_circle(sstr, seq)
+elif visualization_type == "ARC":
+	vis.viz_arc(sstr, seq)
+
+
+
 
 
 

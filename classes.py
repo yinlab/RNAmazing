@@ -3,7 +3,6 @@ import sys
 import classes
 
 class Strand:
-
 	def __init__ (self, material, name, sequence):
 		"""
 		specifies whether DNA or RNA, gives name, and gives sequence
@@ -15,7 +14,6 @@ class Strand:
 
 class Permutations:
 	""" can be implemented as another dict or set """
-
 	# so there is some redundancy in this, but it will have to do for now
 	def __init__(self, lis):
 		self.permutation_list = itertools.permutations(lis)
@@ -72,6 +70,9 @@ class ScoreMatrix:
 		"""Removes both a row and a column at k"""
 		pass
 
+	def __str__(self):
+		return str(self.matrix)
+
 class Permutation:
 	"""Represents a single circular permutation of named strands"""
 	
@@ -119,16 +120,21 @@ class Permutation:
 class Structure:
 	"""Represents the secondary structure of a given strand"""
 	
-	def __init__(self, pairs):
+	def __init__(self, pairs, sequence):
 		"""Builds an initial structure from a list of (int,int) tuples"""
 		self.pairs = pairs
+		self.sequence = sequence
 		
 	def __str__(self):
 		"""Prints an informal string-based representation of the structure"""
 		return str(self.pairs)
-		
+	
+	def get_sequence(self):
+		return self.sequence
+	
 	def get_pairs(self):
 		"""Returns the structure as a list of (int,int) tuples"""
+		return self.pairs	
 	
 	def __iter__(self):
 		for pair in self.pairs:
