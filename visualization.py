@@ -138,6 +138,7 @@ class Visualize:
 		canvash = 200
 		w = Canvas(master, width = canvasw, height = canvash)
 		w.pack()
+		w.configure(background = "white")		
 		
 		class RNA:
 			def __init__ (self, seq, sstr):
@@ -186,10 +187,21 @@ class Visualize:
 				"""
 				Assign x, y coordinate values to all bases
 				"""
+				# Return array of {base: char, x: int, y: int, pair: int}
 				pass
 
 			def draw (self):
 				"""
 				Output to canvas
-				"""
-				pass
+				"""				
+				# Draw all bases and base pairs
+				for base in self.plot:
+					colors = {"G": "green", "C": "blue", "A": "red", "U": "yellow"}
+					w.create_text(base["x"], base["y"], text = base["base"], fill = colors[base["base"]])
+					if base["pair"] != -1:
+						mate = self.plot["pair"]
+						w.create_line(mate["x"], mate["y"], base["x"], base["y"], fill = "gray")
+				
+				# Enter main event loop
+				mainloop()
+				
