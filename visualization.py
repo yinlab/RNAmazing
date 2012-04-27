@@ -122,6 +122,8 @@ class Visualize:
 		# Enter main event loop
 		mainloop()	
 		
+<<<<<<< HEAD
+=======
 	def viz_planar(self,seq,sstr):
 		"""Return bmp of planar secondary structure graph"""
 
@@ -227,3 +229,4 @@ class Visualize:
 				# Enter main event loop
 				mainloop()
 				
+>>>>>>> 009f1b0e856e812be3a9d3c0ffdcd5aefd108c11
