@@ -304,6 +304,10 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 		"""
 		(seq, l) = self.get_sequence()
 		
+		# Energies of various types of loop
+		# loop_energies[n][0] -> Energy of internal loop of size n
+		# loop_energies[n][1] -> Energy of bulge loop of size n
+		# loop_energies[n][2] -> Energy of hairpin loop of size n
 		loop_energies = [None, 						# 0
 						[None,	3.9,	None],	# 1
 						[4.1,	3.1,	None],	# 2
@@ -317,6 +321,7 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 						[7.4,	6.7,	6.5],	# 30
 					]
 		
+		# Energies for coaxial stacks between each type of base pair
 		stack_energies = {
 						"AU": {
 							"AU": -0.9, "CG": -1.8, "GC": -2.3, "UA": -1.1, "GU": -1.1, "UG": -0.8,
@@ -332,6 +337,9 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 							"AU": -1.0, "CG": -1.9, "GC": -2.1, "UA": -1.1, "GU": -1.5, "UG": -0.4,
 						}
 		}
+		
+		# Constant multiloop penalty
+		a = 5
 		
 		# k = 1 -> hairpin
 		# k = 2 -> bulge
@@ -361,6 +369,29 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 		def loop_size(i,j,ip,jp):
 			# TODO: add absolute value?
 			return max(ip-i,j-jp)
+			
+		def eh(i, j):
+			return loop_energy(1,abs(i-j))
+		
+		def es(i, j):
+			return stack_energy(i,j,i+1,j-1)
+		
+		def ebi(i, j, ip, jp):
+			[min_ij, max_ij] = sorted([ip-i,j-jp])
+			
+			# if on one side the closing and the accessible bases are adjacent, it's
+			# a bulge loop (2), else it's an internal loop (3)
+			loop_type = 2 if min_ij == 1 else 3 
+			loop_size = max_ij
+			return loop_energy(loop_type, loop_size)
+		
+		def VBI(i, j):
+			return min([ebi(i, j, ip, jp) + V(ip, jp) for ip in range(i, j) for jp in range(ip, j) if ip - i + j - jp > 2])
+
+
+					
+		def VM(i, j):
+			return min(W(i + 1, k) + W(k + 1, j - 1) for k in range(i, j - 1)) + a
 		
 		def V(i, j):
 			if(self.score_matrix_v.has(i, j)):
@@ -384,30 +415,6 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 				print i, j
 				return out_val
 
-		def VBI(i, j):
-			return min([ebi(i, j, ip, jp) + V(ip, jp) for ip in range(i, j) for jp in range(ip, j) if ip - i + j - jp > 2])
-
-		a = 5
-					
-		def VM(i, j):
-			return min(W(i + 1, k) + W(k + 1, j - 1) for k in range(i, j - 1)) + a
-			
-
-		
-		def eh(i, j):
-			return loop_energy(1,abs(i-j))
-		
-		def es(i, j):
-			return stack_energy(i,j,i+1,j-1)
-		
-		def ebi(i, j, ip, jp):
-			[min_ij, max_ij] = sorted([ip-i,j-jp])
-			
-			# if on one side the closing and the accessible bases are adjacent, it's
-			# a bulge loop (2), else it's an internal loop (3)
-			loop_type = 2 if min_ij == 1 else 3 
-			loop_size = max_ij
-			return loop_energy(loop_type, loop_size)
 		
 
 				
@@ -458,6 +465,7 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 			for j in range(n, l):
 				#i = j - n + 1
 				i = j - n
+				self.score_matrix_v.set(i, j, V(i, j))
 				self.score_matrix.set(i, j, W(i, j))
 		
 	def traceback(self):
@@ -466,32 +474,32 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 		"""
 		(seq, l) = self.get_sequence()
 		
-		def gamma(i, j):
-			return self.score_matrix.get(i, j)
-			
-		def delta(i, j):
-			return self.delta(seq[i], seq[j])
+		def W(i,j):
+			return self.score_matrix.get(i,j)
 
+		def V(i,j):
+			return self.score_matrix_v.get(i, j)
 			
 		pairs = []
 		
 		def trace(i, j):
 			if i < j:
-				if gamma(i, j) == gamma(i + 1, j):
+				if W(i, j) == W(i + 1, j):
 					trace(i + 1, j)
-				elif gamma(i, j) == gamma(i, j - 1):
+				elif W(i, j) == W(i, j - 1):
 					trace(i, j - 1)
-				elif gamma(i, j) == gamma(i + 1, j - 1) + delta(i, j):
+				elif W(i, j) == V(i, j): # W(i + 1, j - 1) + V(i, j):
 					pairs.append((i, j))
 					trace(i + 1, j - 1)
 				else:
 					for k in range(i + 1, j - 1):
-						if gamma(i, j) == gamma(i, k) + gamma(k + 1, j):
+						if W(i, j) == W(i, k) + W(k + 1, j):
 							trace(i, k)
 							trace(k + 1, j)
+							break
 		
 		trace(0, self.score_matrix.get_width() - 1)
-		self.pairs = Structure(pairs)
+		self.pairs = Structure(pairs,self.permutation)
 		return self.pairs
 		
 	def predict_structure(self):

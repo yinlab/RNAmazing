@@ -4,15 +4,15 @@ from prediction import *
 import sys, csv
 
 print "Permutation:\n"
-#perm = Permutation([Strand("DNA","A","ACGUGCCACGAUUCAACGUGGCACAG")])
-perm = Permutation([Strand("DNA","A","GGGAAAUCC")])
+perm = Permutation([Strand("DNA","A","ACGUGCCACGAUUCAACGUGGCACAG")])
+#perm = Permutation([Strand("DNA","A","GGGAAAUCC")])
 
 print perm.get_concatamer()
 
 def print_matrix(matrix):
     print "\nCSV:\n"
     writer = csv.writer(sys.stdout, delimiter="\t")
-    writer.writerows(matrix)
+    writer.writerows(map(lambda row: map(lambda x: None if x==None else round(x,3), row), matrix) )
     print "\nMatrix:\n"
     print "Length: "+str(len(matrix))
     #print nussinov.to_score_matrix().matrix
@@ -46,4 +46,7 @@ zuker = ZukerPredictor(perm,None)
 
 zuker.generate_score_matrix()
 print_matrix(zuker.to_score_matrix().matrix)
-#print zuker.traceback()
+print_matrix(zuker.score_matrix_v.matrix)
+
+
+print zuker.traceback()
