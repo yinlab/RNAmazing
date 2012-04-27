@@ -1,5 +1,7 @@
 from classes import * 
 import string
+import csv
+import sys
 
 class AbstractSingleStrandPredictor:
 	"""
@@ -110,6 +112,19 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 				#i = j - n + 1
 				i = j - n
 				self.score_matrix.set(i, j, gamma(i, j))
+				
+		def print_matrix(matrix):
+			print "\nCSV:\n"
+			writer = csv.writer(sys.stdout, delimiter="\t")
+			writer.writerows(map(lambda row: map(lambda x: None if x==None else round(x,3), row), matrix) )
+			print "\nMatrix:\n"
+			print "Length: "+str(len(matrix))
+			#print nussinov.to_score_matrix().matrix
+			for row in matrix:
+				print str(len(row))+": "+ str(row)
+		
+		print_matrix(self.score_matrix.matrix)
+
 
 	def traceback(self):
 		"""
@@ -198,8 +213,13 @@ class Recalculation:
 		(seq, l) = self.get_sequence()
 		
 		# populate main diagonal with old values
-		for i in range(0, l):
-			for j in range(i, i+self.change_index):
+		# populate main diagonal of score matrix with zeroes
+		self.new_score_matrix.set(0, 0, 0)
+		for i in range(1, l):
+			self.new_score_matrix.set(i, i, 0)
+			self.new_score_matrix.set(i, i - 1, 0)
+		for i in range(0, self.change_index):
+			for j in range(i, self.change_index):
 				if j < l:
 					self.new_score_matrix.set(i, j, self.old_score_matrix.get(i,j))		
 		
@@ -217,11 +237,25 @@ class Recalculation:
 				max([gamma(i, k) + gamma(k + 1, j) for k in range(i, j)])
 			)
 
+		def print_matrix(matrix):
+			print "\nCSV:\n"
+			writer = csv.writer(sys.stdout, delimiter="\t")
+			writer.writerows(map(lambda row: map(lambda x: None if x==None else round(x,3), row), matrix) )
+			print "\nMatrix:\n"
+			print "Length: "+str(len(matrix))
+			#print nussinov.to_score_matrix().matrix
+			for row in matrix:
+				print str(len(row))+": "+ str(row)
+		
+		print_matrix(self.new_score_matrix.matrix)
+
 		for n in range(1, l):
 			for j in range(n, l):
 				#i = j - n + 1
 				i = j - n
 				self.new_score_matrix.set(i, j, gamma(i, j))
+				
+		print_matrix(self.new_score_matrix.matrix)
 
 
 #		for n in range(self.change_index + 1, l):
