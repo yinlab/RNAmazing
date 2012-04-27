@@ -122,6 +122,8 @@ class Visualize:
 		# Enter main event loop
 		mainloop()	
 		
+<<<<<<< HEAD
+=======
 	def viz_planar(self,seq,sstr):
 		"""Return bmp of planar secondary structure graph"""
 
@@ -138,6 +140,7 @@ class Visualize:
 		canvash = 200
 		w = Canvas(master, width = canvasw, height = canvash)
 		w.pack()
+		w.configure(background = "white")		
 		
 		class RNA:
 			def __init__ (self, seq, sstr):
@@ -149,27 +152,48 @@ class Visualize:
 					seq_list.append({"base": i, "pair": -1, "mark" = False})
 					for b1, b2 in sstr:
 						seq_list[b1]["pair"] = b2
-						
+		    
 			def regions (self):
 				"""
 				Define stem regions
 				"""
 				regions = []
-				for index,entry in enumerate(seq_list):
+				for index, entry in enumerate(seq_list):
 					if entry["pair"] != -1 and entry["mark"] = False:
 						regions.append({"start1": entry["base"], 
 								"end2": entry["pair"]})
+						
+						region_index = len(regions) - 1
 						entry["mark"] = True
+						entry["region"] = region_index
+						
 						n = entry["pair"]
+						ending = entry["pair"]
 						seq_list[n]["mark"] = True
-						for j in seq_list[index::n]:
+						seq_list[n]["region"] = region_index
+
+						for i,j in enumerate(seq_list[index::ending]):
 							if j["pair"] == n-1:
 								j["mark"] = True
+								j["region"] = region_index
+								
 								n = j["pair"]
 								seq_list[n]["mark"] = True
+								seq_list[n]["region"] = region_index
 							else:
-								break
-						
+								regions[region_index]["start2"] = 
+								seq_list[i-1]["base"]
+								seq_list[i-1]["region"] = 
+								region_index
+								
+								pair_loc = seq_list[i-1]["pair"]
+								
+								regions[region_index]["end2"] = 
+								pair_loc
+								
+								seq_list[pair_loc]["region"] = 
+								region_index
+
 
 			def loops (self): 
 				"""
@@ -181,15 +205,28 @@ class Visualize:
 				"""
 				Connects loops to stems and other loops
 				"""
+				pass
 
 			def plot (self):
 				"""
 				Assign x, y coordinate values to all bases
 				"""
+				# Return array of {base: char, x: int, y: int, pair: int}
 				pass
 
 			def draw (self):
 				"""
 				Output to canvas
-				"""
-				pass
+				"""				
+				# Draw all bases and base pairs
+				for base in self.plot:
+					colors = {"G": "green", "C": "blue", "A": "red", "U": "yellow"}
+					w.create_text(base["x"], base["y"], text = base["base"], fill = colors[base["base"]])
+					if base["pair"] != -1:
+						mate = self.plot["pair"]
+						w.create_line(mate["x"], mate["y"], base["x"], base["y"], fill = "gray")
+				
+				# Enter main event loop
+				mainloop()
+				
+>>>>>>> 009f1b0e856e812be3a9d3c0ffdcd5aefd108c11
