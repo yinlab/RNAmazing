@@ -156,7 +156,7 @@ class Visualize:
 				Define stem regions
 				"""
 				regions = []
-				for index,entry in enumerate(seq_list):
+				for index, entry in enumerate(seq_list):
 					if entry["pair"] != -1 and entry["mark"] = False:
 						regions.append({"start1": entry["base"], 
 								"end2": entry["pair"]})
