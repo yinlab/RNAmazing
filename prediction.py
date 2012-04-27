@@ -111,7 +111,6 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 				i = j - n
 				self.score_matrix.set(i, j, gamma(i, j))
 
-		
 	def traceback(self):
 		"""
 		Performs the traceback function
@@ -169,7 +168,6 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 		"""
 		return self.score_matrix
 
-
 class Recalculation:
 	def __init__(self, scorematrix, original_permutation, strand_name, index, base):
 		"""
@@ -192,8 +190,7 @@ class Recalculation:
 	def get_sequence(self):
 		self.seq = self.new_permutation.get_concatamer()
 		return (self.seq, len(self.seq))	
-	
-	
+		
 	def generate_score_matrix(self):
 		"""
 		Populates the score matrix
@@ -220,10 +217,17 @@ class Recalculation:
 				max([gamma(i, k) + gamma(k + 1, j) for k in range(i, j)])
 			)
 
-		for n in range(self.change_index + 1, l):
+		for n in range(1, l):
 			for j in range(n, l):
+				#i = j - n + 1
 				i = j - n
 				self.new_score_matrix.set(i, j, gamma(i, j))
+
+
+#		for n in range(self.change_index + 1, l):
+#			for j in range(n, l):
+#				i = j - n
+#				self.new_score_matrix.set(i, j, gamma(i, j))
 
 	def traceback(self):
 		"""
@@ -257,7 +261,7 @@ class Recalculation:
 							break
 
 		trace(0, self.new_score_matrix.get_width() - 1)
-		self.pairs = Structure(pairs, self.seq)
+		self.pairs = pairs
 		return self.pairs
 		
 	def predict_structure(self):
@@ -278,7 +282,7 @@ class Recalculation:
 		"""
 		Returns the score matrix g enerated by #predict_structure
 		"""
-		return self.score_matrix
+		return self.new_score_matrix
 
 class ZukerPredictor(AbstractSingleStrandPredictor):
 	"""
