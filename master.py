@@ -67,9 +67,12 @@ for line in file:
 		else:
 			string_counter += 1
 			break
-	#if (strands_list.mem).name = strand_name:
-	#	print "ERROR:  No two strands can have the same name"
-	#	sys.exit()
+
+	def name_check(x): return (x.name == strand_name)
+	
+	if filter(name_check, strands_list) != []:
+		print "ERROR:  No two strands can have the same name"
+		sys.exit()
 	print "Strand name:  " + strand_name
 
 	# catches if there is an error in formatting
