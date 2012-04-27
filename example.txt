@@ -1,2 +1,1 @@
-{strand1;dna;gcggcgcccgggcccaata}
-{strand2;dna;agctactcatcgga}
+{strand1;dna;aaaaaaaaaaa}

@@ -177,7 +177,9 @@ class Recalculation:
 		in the original scorematrix, the number of the base being updated, and the permutation
 		to which we are performing the update
 		"""
-		self.score_matrix = scorematrix
+		self.old_score_matrix = scorematrix
+		l = len(original_permutation.get_concatamer())
+		self.new_score_matrix = ScoreMatrix(l,l)
 		(self.new_permutation, self.change_index) = original_permutation.simple_transformation(strand_name,index,base)
 		
 	def delta(self, ni, nj):
@@ -196,8 +198,13 @@ class Recalculation:
 		"""
 		Populates the score matrix
 		"""
-		# need to make this get new sequence
 		(seq, l) = self.get_sequence()
+		
+		# populate main diagonal with old values
+		for i in range(0, l):
+			for j in range(i, i+self.change_index):
+				if j < l:
+					self.new_score_matrix.set(i, j, self.old_score_matrix.get(i,j))		
 		
 		def delta(i, j):
 			if self.delta(seq[i], seq[j]) != 0:
@@ -206,7 +213,7 @@ class Recalculation:
 				return 0
 
 		def gamma(i, j):
-			if(self.score_matrix.has(i, j)): return self.score_matrix.get(i, j) 
+			if(self.new_score_matrix.has(i, j)): return self.new_score_matrix.get(i, j) 
 			return max(gamma(i + 1, j),
 				gamma(i, j - 1),
 				gamma(i + 1, j - 1) + delta(i, j),
@@ -216,7 +223,7 @@ class Recalculation:
 		for n in range(self.change_index + 1, l):
 			for j in range(n, l):
 				i = j - n
-				self.score_matrix.set(i, j, gamma(i, j))
+				self.new_score_matrix.set(i, j, gamma(i, j))
 
 	def traceback(self):
 		"""
@@ -225,7 +232,7 @@ class Recalculation:
 		(seq, l) = self.get_sequence()
 		
 		def gamma(i, j):
-			return self.score_matrix.get(i, j)
+			return self.new_score_matrix.get(i, j)
 			
 		def delta(i, j):
 			return self.delta(seq[i], seq[j])
@@ -249,7 +256,7 @@ class Recalculation:
 							trace(k + 1, j)
 							break
 
-		trace(0, self.score_matrix.get_width() - 1)
+		trace(0, self.new_score_matrix.get_width() - 1)
 		self.pairs = Structure(pairs, self.seq)
 		return self.pairs
 		

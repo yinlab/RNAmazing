@@ -185,7 +185,6 @@ elif visualization_type == "CIRCLE":
 elif visualization_type == "ARC":
 	vis.viz_arc(sstr, seq)
 
-
 # gets permutation object from structure object and overall index of the change
 #best_perm = best_nussinov.get_permutation()
 #(sub_perm, index) = best_perm.simple_transformation("strand1", 2, 'a')
