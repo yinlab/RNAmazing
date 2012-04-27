@@ -311,6 +311,10 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 		"""
 		(seq, l) = self.get_sequence()
 		
+		# Energies of various types of loop
+		# loop_energies[n][0] -> Energy of internal loop of size n
+		# loop_energies[n][1] -> Energy of bulge loop of size n
+		# loop_energies[n][2] -> Energy of hairpin loop of size n
 		loop_energies = [None, 						# 0
 						[None,	3.9,	None],	# 1
 						[4.1,	3.1,	None],	# 2
@@ -324,6 +328,7 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 						[7.4,	6.7,	6.5],	# 30
 					]
 		
+		# Energies for coaxial stacks between each type of base pair
 		stack_energies = {
 						"AU": {
 							"AU": -0.9, "CG": -1.8, "GC": -2.3, "UA": -1.1, "GU": -1.1, "UG": -0.8,
@@ -340,26 +345,64 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 						}
 		}
 		
+		# Constant multiloop penalty
+		a = 5
+		
 		# k = 1 -> hairpin
 		# k = 2 -> bulge
 		# k = 3 -> internal loop
 		def loop_energy(k,size):
-			if size > 5: size = round(size/5)*5
-			return loop_energies[size,3-k]
+			if size > 5: 
+				size = int(round(size/5))
+				if size > 10: 
+					size = 10
+			energy = loop_energies[size][3-k]
+			if energy == None:
+				return 0
+			else:
+				return energy
 		
 		def stack_energy(i,j,ip,jp):
-			return stack_energies[base(i)+base(j)][base(ip)+base(jp)]
+			key = "".join(sorted([base(i),base(j)]))
+			keyp = "".join(sorted([base(ip),base(jp)]))
+			if (key in stack_energies) and (keyp in stack_energies[key]):
+				return stack_energies[key][keyp]
+			else:
+				return 0
 			
 		def base(k):
 			return seq[k]
 		
 		def loop_size(i,j,ip,jp):
 			# TODO: add absolute value?
-			max(ip-i,j-jp)
+			return max(ip-i,j-jp)
+			
+		def eh(i, j):
+			return loop_energy(1,abs(i-j))
+		
+		def es(i, j):
+			return stack_energy(i,j,i+1,j-1)
+		
+		def ebi(i, j, ip, jp):
+			[min_ij, max_ij] = sorted([ip-i,j-jp])
+			
+			# if on one side the closing and the accessible bases are adjacent, it's
+			# a bulge loop (2), else it's an internal loop (3)
+			loop_type = 2 if min_ij == 1 else 3 
+			loop_size = max_ij
+			return loop_energy(loop_type, loop_size)
+		
+		def VBI(i, j):
+			return min([ebi(i, j, ip, jp) + V(ip, jp) for ip in range(i, j) for jp in range(ip, j) if ip - i + j - jp > 2])
+
+
+					
+		def VM(i, j):
+			return min(W(i + 1, k) + W(k + 1, j - 1) for k in range(i, j - 1)) + a
 		
 		def V(i, j):
-			if(self.v_score_matrix.has(i, j)):
-				return self.v_score_matrix.get(i, j)
+			if(self.score_matrix_v.has(i, j)):
+				return self.score_matrix_v.get(i, j)
 			else:
 				return min(eh(i, j),
 						es(i, j) + V(i + 1, j - 1),
@@ -368,49 +411,69 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 		
 		def W(i, j):
 			if(self.score_matrix.has(i, j)):
-				self.score_matrix.get(i, j)
+				return self.score_matrix.get(i, j)
 			else:
-				return min(W(i + 1, j),
-						W(i, j - 1),
-						V(i, j),
-						min([W(i, k) + W(k + 1, j) for k in range(i, j)]))
+				w1 = W(i + 1, j)
+				w2 = W(i, j - 1)
+				w3 = V(i, j)
+				w4 = min([W(i, k) + W(k + 1, j) for k in range(i, j)] if (i!=j)  else [float("inf")])
+				
+				out_val = min(w1, w2, w3, w4)
+				print i, j
+				return out_val
 
-		def VBI(i, j):
-			min([ebi(i, j, ip, jp) + V(ip, jp) for ip in range(i, j) for jp in range(ip, j) if ip - i + j - jp > 2])
-			
-		def VM(i, j):
-			min(W(i + 1, k) + W(k + 1, j - 1) for k in range(i, j - 1)) + a
-			
-		a = 5
-		
-		def eh(i, j):
-			return loop_energy(1,abs(i-j))
-		
-		def es(i, j):
-			return stack_energy(i,j,i+1,j-1)
-		
-		def ebi(i, j, ip, jp):
-			[min_ij, max_ij] = [ip-i,j-jp].sort()
-			
-			# if on one side the closing and the accessible bases are adjacent, it's
-			# a bulge loop (2), else it's an internal loop (3)
-			loop_type = 2 if min_ij == 1 else 3 
-			loop_size = max_ij
-			return loop_energy(loop_type, loop_size)
 		
 
 				
 		# populate main diagonal of score matrix with zeroes
-		self.score_matrix.set(0, 0, 0)
-		for j in range(4, l):
-			for i in range(j - 4, j):
+		if l < 4:
+			# populate score matrix entirely with infinity
+			pass
+		
+		# We want this, ultimately:
+		
+		# j,i->	0	1	2	3	4	5	6	7
+		# 0:	oo	oo	oo	oo	
+		# 1:	oo	oo	oo	oo	oo
+		# 2:	oo	oo	oo	oo	oo	oo
+		# 3:	oo	oo	oo	oo	oo	oo	oo	
+		# 4:		oo	oo	oo	oo	oo	oo	oo
+		# 5:			oo	oo	oo	oo_	oo_	oo_
+		# 6:				oo	oo	oo_	oo_	oo_
+		# 7:					oo	oo_	oo_	oo_
+		
+		# where oo = infinity
+		# we'll generate all but the bottom right (the oo_) cells first...
+		else:
+			for n in range(l-3):
+				j = n
+				for i in range(n,n+4):
+					self.score_matrix.set(i, j, float("inf"))
+					self.score_matrix_v.set(i, j, float("inf")) 		
+		
+				i = n
+				for j in range(n,n+4):
+					self.score_matrix.set(i, j, float("inf"))
+					self.score_matrix_v.set(i, j, float("inf")) 		
+					
+		# ...then do the bottom nine
+		for i in range(l-3,l):
+			for j in range(l-3,l):
 				self.score_matrix.set(i, j, float("inf"))
 				self.score_matrix_v.set(i, j, float("inf")) 		
 		
-		for i in range(1, l):
-			for j in range(i, l):
-				self.score_matrix.set(i, j, W(i, j))
+		# Do the main thing
+#		for i in range(1, l):
+#			for j in range(i, l):
+#				self.score_matrix.set(i, j, W(i, j))
+#				self.score_matrix_v.set(i, j, V(i, j))
+
+		for n in range(1, l):
+			for j in range(n, l):
+				#i = j - n + 1
+				i = j - n
 				self.score_matrix_v.set(i, j, V(i, j))
+				self.score_matrix.set(i, j, W(i, j))
 		
 	def traceback(self):
 		"""
@@ -418,32 +481,32 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 		"""
 		(seq, l) = self.get_sequence()
 		
-		def gamma(i, j):
-			return self.score_matrix.get(i, j)
-			
-		def delta(i, j):
-			return self.delta(seq[i], seq[j])
+		def W(i,j):
+			return self.score_matrix.get(i,j)
 
+		def V(i,j):
+			return self.score_matrix_v.get(i, j)
 			
 		pairs = []
 		
 		def trace(i, j):
 			if i < j:
-				if gamma(i, j) == gamma(i + 1, j):
+				if W(i, j) == W(i + 1, j):
 					trace(i + 1, j)
-				elif gamma(i, j) == gamma(i, j - 1):
+				elif W(i, j) == W(i, j - 1):
 					trace(i, j - 1)
-				elif gamma(i, j) == gamma(i + 1, j - 1) + delta(i, j):
+				elif W(i, j) == V(i, j): # W(i + 1, j - 1) + V(i, j):
 					pairs.append((i, j))
 					trace(i + 1, j - 1)
 				else:
 					for k in range(i + 1, j - 1):
-						if gamma(i, j) == gamma(i, k) + gamma(k + 1, j):
+						if W(i, j) == W(i, k) + W(k + 1, j):
 							trace(i, k)
 							trace(k + 1, j)
+							break
 		
 		trace(0, self.score_matrix.get_width() - 1)
-		self.pairs = Structure(pairs)
+		self.pairs = Structure(pairs,self.permutation)
 		return self.pairs
 		
 	def predict_structure(self):
