@@ -126,7 +126,6 @@ for line in file:
 	strands_list.append(strand_obj)	
 file.close()
 
-
 # prints all possible permutations
 print "Testing multiple permutations with Nussinov Algorithm..."
 multiple_permutations = classes.Permutations(strands_list)
