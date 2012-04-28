@@ -1,5 +1,7 @@
-from classes import * 
+from classes import *
 import string
+import csv
+import sys
 
 class AbstractSingleStrandPredictor:
 	"""
@@ -51,7 +53,7 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 	Implements Nussinov's dynamic programming algorithm for predicting 
 	secondary structure by maximizing the number of paired bases.
 	"""
-	
+
 	def __init__(self, permutation, score_matrix=None):
 		"""
 		Initializes from a Permutation and a (possibly empty) ScoreMatrix
@@ -110,8 +112,20 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 				#i = j - n + 1
 				i = j - n
 				self.score_matrix.set(i, j, gamma(i, j))
-
+				
+		def print_matrix(matrix):
+			print "\nCSV:\n"
+			writer = csv.writer(sys.stdout, delimiter="\t")
+			writer.writerows(map(lambda row: map(lambda x: None if x==None else round(x,3), row), matrix) )
+			print "\nMatrix:\n"
+			print "Length: "+str(len(matrix))
+			#print nussinov.to_score_matrix().matrix
+			for row in matrix:
+				print str(len(row))+": "+ str(row)
 		
+		print_matrix(self.score_matrix.matrix)
+
+
 	def traceback(self):
 		"""
 		Performs the traceback function
@@ -169,7 +183,6 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 		"""
 		return self.score_matrix
 
-
 class Recalculation:
 	def __init__(self, scorematrix, original_permutation, strand_name, index, base):
 		"""
@@ -177,7 +190,9 @@ class Recalculation:
 		in the original scorematrix, the number of the base being updated, and the permutation
 		to which we are performing the update
 		"""
-		self.score_matrix = scorematrix
+		self.old_score_matrix = scorematrix
+		l = len(original_permutation.get_concatamer())
+		self.new_score_matrix = ScoreMatrix(l,l)
 		(self.new_permutation, self.change_index) = original_permutation.simple_transformation(strand_name,index,base)
 		
 	def delta(self, ni, nj):
@@ -190,14 +205,23 @@ class Recalculation:
 	def get_sequence(self):
 		self.seq = self.new_permutation.get_concatamer()
 		return (self.seq, len(self.seq))	
-	
-	
+		
 	def generate_score_matrix(self):
 		"""
 		Populates the score matrix
 		"""
-		# need to make this get new sequence
 		(seq, l) = self.get_sequence()
+		
+		# populate main diagonal with old values
+		# populate main diagonal of score matrix with zeroes
+		self.new_score_matrix.set(0, 0, 0)
+		for i in range(1, l):
+			self.new_score_matrix.set(i, i, 0)
+			self.new_score_matrix.set(i, i - 1, 0)
+		for i in range(0, self.change_index):
+			for j in range(i, self.change_index):
+				if j < l:
+					self.new_score_matrix.set(i, j, self.old_score_matrix.get(i,j))		
 		
 		def delta(i, j):
 			if self.delta(seq[i], seq[j]) != 0:
@@ -206,17 +230,38 @@ class Recalculation:
 				return 0
 
 		def gamma(i, j):
-			if(self.score_matrix.has(i, j)): return self.score_matrix.get(i, j) 
+			if(self.new_score_matrix.has(i, j)): return self.new_score_matrix.get(i, j) 
 			return max(gamma(i + 1, j),
 				gamma(i, j - 1),
 				gamma(i + 1, j - 1) + delta(i, j),
 				max([gamma(i, k) + gamma(k + 1, j) for k in range(i, j)])
 			)
 
-		for n in range(self.change_index + 1, l):
+		def print_matrix(matrix):
+			print "\nCSV:\n"
+			writer = csv.writer(sys.stdout, delimiter="\t")
+			writer.writerows(map(lambda row: map(lambda x: None if x==None else round(x,3), row), matrix) )
+			print "\nMatrix:\n"
+			print "Length: "+str(len(matrix))
+			#print nussinov.to_score_matrix().matrix
+			for row in matrix:
+				print str(len(row))+": "+ str(row)
+		
+		print_matrix(self.new_score_matrix.matrix)
+
+		for n in range(1, l):
 			for j in range(n, l):
+				#i = j - n + 1
 				i = j - n
-				self.score_matrix.set(i, j, gamma(i, j))
+				self.new_score_matrix.set(i, j, gamma(i, j))
+				
+		print_matrix(self.new_score_matrix.matrix)
+
+
+#		for n in range(self.change_index + 1, l):
+#			for j in range(n, l):
+#				i = j - n
+#				self.new_score_matrix.set(i, j, gamma(i, j))
 
 	def traceback(self):
 		"""
@@ -225,7 +270,7 @@ class Recalculation:
 		(seq, l) = self.get_sequence()
 		
 		def gamma(i, j):
-			return self.score_matrix.get(i, j)
+			return self.new_score_matrix.get(i, j)
 			
 		def delta(i, j):
 			return self.delta(seq[i], seq[j])
@@ -249,8 +294,8 @@ class Recalculation:
 							trace(k + 1, j)
 							break
 
-		trace(0, self.score_matrix.get_width() - 1)
-		self.pairs = Structure(pairs, self.seq)
+		trace(0, self.new_score_matrix.get_width() - 1)
+		self.pairs = pairs
 		return self.pairs
 		
 	def predict_structure(self):
@@ -271,7 +316,7 @@ class Recalculation:
 		"""
 		Returns the score matrix g enerated by #predict_structure
 		"""
-		return self.score_matrix
+		return self.new_score_matrix
 
 class ZukerPredictor(AbstractSingleStrandPredictor):
 	"""

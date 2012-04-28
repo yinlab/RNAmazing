@@ -1,6 +1,6 @@
 from classes import *
 from prediction import *
-#from visualization import Visualize
+from visualization import Visualize
 import sys, csv
 
 print "Permutation:\n"
@@ -38,8 +38,7 @@ def print_matrix(matrix):
 
 #sstr = nussinov.to_structure()
 #(seq,length) = nussinov.get_sequence()
-#vis = Visualize()
-#vis.viz_circle(sstr, seq)
+
 
 print "\nZuker:\n"
 zuker = ZukerPredictor(perm,None)
@@ -48,5 +47,9 @@ zuker.generate_score_matrix()
 print_matrix(zuker.to_score_matrix().matrix)
 print_matrix(zuker.score_matrix_v.matrix)
 
-
 print zuker.traceback()
+
+sstr = zuker.to_structure()
+(seq,l) = zuker.get_sequence()
+vis = Visualize()
+vis.viz_circle(sstr, seq)
