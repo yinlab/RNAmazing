@@ -116,7 +116,6 @@ class Visualize:
 			coords.append({"x": x2, "y": y2})
 			
 		# Draw segments between bases
-
 		for base1, base2 in sstr:
 			w.create_line(coords[base1]["x"], coords[base1]["y"], 
 				      coords[base2]["x"], coords[base2]["y"])
@@ -124,9 +123,10 @@ class Visualize:
 		# Output to file
 		canvasvg.saveall("circle.svg", w)
 	
-	def viz_mountain(self, seq, sstr):
-		"""Returns svg of secondary structure mountain plot"""
-		
+	def viz_mountain(self, sstr, seq):
+		"""
+		Returns svg of secondary structure mountain plot
+		"""
 		import math
 		import canvasvg
 		from Tkinter import *
@@ -143,19 +143,15 @@ class Visualize:
 		w.pack()
 		w.configure(background = "white")	
 
-		def find_enclosures(seq, sstr):
-			enclosures = []
-			max_enclosures = 0
-			for i in seq:
-				enclosures.append({"base": i, "enclosures": 0})
-			for b1, b2 in sstr:
-				for j in enclosures[(b1 + 1):b2]:
-					j["enclosures"] += 1
-					if max_enclosures < j["enclosures"]:
-						max_enclosures += 1
-			return (enclosures, max_enclosures)
-
-		enclosures, max_enclosures = find_enclosures(seq, sstr)
+		enclosures = []
+		max_enclosures = 0
+		for i in seq:
+			enclosures.append({"base": i, "enclosures": 0})
+		for b1, b2 in sstr:
+			for j in enclosures[(b1 + 1):b2]:
+				j["enclosures"] += 1
+				if max_enclosures < j["enclosures"]:
+					max_enclosures += 1
 
 		# Define bounding box of plot and other plot variables
 		plot_x1 = 100
@@ -163,7 +159,7 @@ class Visualize:
 		plot_y1 = 50
 		plot_y2 = canvasheight - 50
 		xinc = (plot_x2 - plot_x1) / len(seq)
-		yinc = (plot_y2 - plot_y1) / max_enclosures
+		yinc = (plot_y2 - plot_y1) / (max_enclosures if max_enclosures else 1)
 
 		# Draw axes and labels
 		w.create_line(plot_x1, plot_y1, plot_x1, plot_y2)
