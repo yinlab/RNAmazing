@@ -1,4 +1,4 @@
-from classes import * 
+from classes import *
 import string
 import csv
 import sys
@@ -53,7 +53,7 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 	Implements Nussinov's dynamic programming algorithm for predicting 
 	secondary structure by maximizing the number of paired bases.
 	"""
-	
+
 	def __init__(self, permutation, score_matrix=None):
 		"""
 		Initializes from a Permutation and a (possibly empty) ScoreMatrix
