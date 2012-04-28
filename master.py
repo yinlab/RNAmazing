@@ -12,6 +12,7 @@ import string
 import classes
 import prediction
 import visualization
+import master
 
 
 # checks validity of command line arguments
@@ -139,7 +140,10 @@ def import_from_file():
 	file.close()
 
 
+
+
 def nussinov_algorithm(multiple_permutations):
+
 	# prints all possible permutations
 	print "Testing multiple permutations with Nussinov Algorithm..."
 
@@ -174,22 +178,10 @@ def nussinov_algorithm(multiple_permutations):
 	print "Sequence: " + seq
 
 	# pass output to visualization module
-	visualization_type = string.upper(sys.argv[2])
-	vis = visualization.Visualize()
-	if visualization_type == "DOTPAREN":
-		print "In dot-paren notation: " 
-		print vis.viz_bracket(sstr, seq)
-	elif visualization_type == "CIRCLE":
-		vis.viz_circle(sstr, seq)
-	elif visualization_type == "ARC":
-		vis.viz_arc(sstr, seq)
-	elif visualization_type == "MOUNTAIN":
-		vis.viz_mountain(sstr, seq)
-
+	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
 
 	# real-time recalculation set-up
 	while True:
-
 		# gets user input for any updates
 		option = "q"
 		input_valid = False
@@ -249,19 +241,14 @@ def nussinov_algorithm(multiple_permutations):
 		print "Sequence: " + seq
 
 		# pass output to visualization module
-		visualization_type = string.upper(sys.argv[2])
-		vis = visualization.Visualize()
-		if visualization_type == "DOTPAREN":
-			print "In dot-paren notation: " 
-			print vis.viz_bracket(sstr, seq)
-		elif visualization_type == "CIRCLE":
-			vis.viz_circle(sstr, seq)
-		elif visualization_type == "ARC":
-			vis.viz_arc(sstr, seq)
+		visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
+	
 	else:
 		sys.exit()
 
+
 def zuker_algorithm(multiple_permutations):
+
 	# creates a list of all possible nussinov structures and score matrices
 	list_of_zuker_structures = []
 	list_of_zuker_matrices = []
@@ -290,7 +277,11 @@ def zuker_algorithm(multiple_permutations):
 	print "Sequence: " + seq
 
 	# pass output to visualization module
-	visualization_type = string.upper(sys.argv[2])
+	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
+
+
+# visualization function
+def visualization_fun(sstr, seq, visualization_type):
 	vis = visualization.Visualize()
 	if visualization_type == "DOTPAREN":
 		print "In dot-paren notation: " 
@@ -299,6 +290,8 @@ def zuker_algorithm(multiple_permutations):
 		vis.viz_circle(sstr, seq)
 	elif visualization_type == "ARC":
 		vis.viz_arc(sstr, seq)
+	elif visualization_type == "MOUNTAIN":
+		vis.viz_mountain(sstr, seq)
 
 
 #./master.py filename.txt visualization algorithm
