@@ -12,6 +12,7 @@ import string
 import classes
 import prediction
 import visualization
+import master
 
 
 # checks validity of command line arguments
@@ -174,15 +175,7 @@ def nussinov_algorithm(multiple_permutations):
 	print "Sequence: " + seq
 
 	# pass output to visualization module
-	visualization_type = string.upper(sys.argv[2])
-	vis = visualization.Visualize()
-	if visualization_type == "DOTPAREN":
-		print "In dot-paren notation: " 
-		print vis.viz_bracket(sstr, seq)
-	elif visualization_type == "CIRCLE":
-		vis.viz_circle(sstr, seq)
-	elif visualization_type == "ARC":
-		vis.viz_arc(sstr, seq)
+	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
 
 
 	# real-time recalculation set-up
@@ -247,15 +240,8 @@ def nussinov_algorithm(multiple_permutations):
 		print "Sequence: " + seq
 
 		# pass output to visualization module
-		visualization_type = string.upper(sys.argv[2])
-		vis = visualization.Visualize()
-		if visualization_type == "DOTPAREN":
-			print "In dot-paren notation: " 
-			print vis.viz_bracket(sstr, seq)
-		elif visualization_type == "CIRCLE":
-			vis.viz_circle(sstr, seq)
-		elif visualization_type == "ARC":
-			vis.viz_arc(sstr, seq)
+		visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
+	
 	else:
 		sys.exit()
 
@@ -288,7 +274,11 @@ def zuker_algorithm(multiple_permutations):
 	print "Sequence: " + seq
 
 	# pass output to visualization module
-	visualization_type = string.upper(sys.argv[2])
+	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
+
+
+# visualization function
+def visualization_fun(sstr, seq, visualization_type):
 	vis = visualization.Visualize()
 	if visualization_type == "DOTPAREN":
 		print "In dot-paren notation: " 
