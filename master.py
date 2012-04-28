@@ -23,8 +23,8 @@ def cmdline_validation():
 		file = sys.argv[1]
 		third_arg = string.upper(sys.argv[2])
 		fourth_arg = string.upper(sys.argv[3])
-		if (third_arg != "CIRCLE") & (third_arg != "DOTPAREN") & (third_arg != "ARC"):
-			print "Usage: possible visualization types include DOTPAREN CIRCLE ARC"
+		if (third_arg != "CIRCLE") & (third_arg != "DOTPAREN") & (third_arg != "ARC") & (third_arg != "MOUNTAIN"):
+			print "Usage: possible visualization types include DOTPAREN CIRCLE ARC MOUNTAIN"
 			sys.exit()
 		if (fourth_arg != "NUSSINOV") & (fourth_arg != "ZUKER"):
 			print "Usage: possible algorithm types include NUSSINOV ZUKER"
@@ -183,6 +183,8 @@ def nussinov_algorithm(multiple_permutations):
 		vis.viz_circle(sstr, seq)
 	elif visualization_type == "ARC":
 		vis.viz_arc(sstr, seq)
+	elif visualization_type == "MOUNTAIN":
+		vis.viz_mountain(sstr, seq)
 
 
 	# real-time recalculation set-up
