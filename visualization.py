@@ -122,7 +122,3 @@ class Visualize:
 		# Enter main event loop
 		mainloop()	
 		
-
-
-				
-
