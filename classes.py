@@ -2,6 +2,7 @@ import itertools
 import sys
 import classes
 import string
+import csv
 
 class Strand:
 	def __init__ (self, material, name, sequence):
@@ -75,6 +76,20 @@ class ScoreMatrix:
 		"""Removes both a row and a column at k"""
 		pass
 
+	def print_matrix(self, format="csv"):
+		matrix = self.matrix
+		
+		if(format=="csv"):
+			writer = csv.writer(sys.stdout, delimiter="\t")
+			writer.writerows(map(lambda row: map(lambda x: None if x==None else round(x,3), row), matrix) )
+		else:
+			print "Rows: "+str(len(matrix))
+			#print nussinov.to_score_matrix().matrix
+			i = 0
+			for row in matrix:
+				i = i+1
+				print str(i)+"("+str(len(row))+") : "+ str(row)
+
 	def __str__(self):
 		return str(self.matrix)
 
@@ -134,7 +149,7 @@ class Permutation:
 			if (sub != 'A') & (sub != 'T') & (sub != 'C') & (sub != 'G'):
 				print "ERROR:  DNA sequences can only consist of A, T, C, & G"
 				sys.exit()
-		elif (strands[strands_index]).material == "RNA":
+		elif (self.strands[strands_index]).material == "RNA":
 			if (sub != 'A') & (sub != 'U') & (sub != 'C') & (sub != 'G'):
 				print "ERROR:  RNA sequences can only consist of A, U, C, & G"
 				sys.exit()	
