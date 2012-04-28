@@ -24,8 +24,8 @@ def cmdline_validation():
 		file = sys.argv[1]
 		third_arg = string.upper(sys.argv[2])
 		fourth_arg = string.upper(sys.argv[3])
-		if (third_arg != "CIRCLE") & (third_arg != "DOTPAREN") & (third_arg != "ARC"):
-			print "Usage: possible visualization types include DOTPAREN CIRCLE ARC"
+		if (third_arg != "CIRCLE") & (third_arg != "DOTPAREN") & (third_arg != "ARC") & (third_arg != "MOUNTAIN"):
+			print "Usage: possible visualization types include DOTPAREN CIRCLE ARC MOUNTAIN"
 			sys.exit()
 		if (fourth_arg != "NUSSINOV") & (fourth_arg != "ZUKER"):
 			print "Usage: possible algorithm types include NUSSINOV ZUKER"
@@ -140,7 +140,10 @@ def import_from_file():
 	file.close()
 
 
+
+
 def nussinov_algorithm(multiple_permutations):
+
 	# prints all possible permutations
 	print "Testing multiple permutations with Nussinov Algorithm..."
 
@@ -177,10 +180,8 @@ def nussinov_algorithm(multiple_permutations):
 	# pass output to visualization module
 	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
 
-
 	# real-time recalculation set-up
 	while True:
-
 		# gets user input for any updates
 		option = "q"
 		input_valid = False
@@ -245,7 +246,9 @@ def nussinov_algorithm(multiple_permutations):
 	else:
 		sys.exit()
 
+
 def zuker_algorithm(multiple_permutations):
+
 	# creates a list of all possible nussinov structures and score matrices
 	list_of_zuker_structures = []
 	list_of_zuker_matrices = []
@@ -287,6 +290,8 @@ def visualization_fun(sstr, seq, visualization_type):
 		vis.viz_circle(sstr, seq)
 	elif visualization_type == "ARC":
 		vis.viz_arc(sstr, seq)
+	elif visualization_type == "MOUNTAIN":
+		vis.viz_mountain(sstr, seq)
 
 
 #./master.py filename.txt visualization algorithm
