@@ -21,9 +21,10 @@ class Visualize:
 
 	def viz_arc(self,sstr,seq):
 		"""
-		Returns bmp of arc secondary structure graph
+		Returns svg of arc secondary structure graph
 		"""
 		import math
+		import canvasvg
 		from Tkinter import * 
 
 		# Create Tk instance
@@ -63,15 +64,16 @@ class Visualize:
 				      start = 0, extent = 180, style = "arc")
 
 
-		# Enter main event loop
-		mainloop()	
+		# Output to file
+		canvasvg.saveall("arc.svg", w)	
 
 
 	def viz_circle(self, sstr, seq):
 		"""
-		Returns bmp of chord secondary structure graph
+		Returns svg of chord secondary structure graph
 		"""
 		import math
+		import canvasvg
 		from Tkinter import *
 
 		# Create a Tk instance
@@ -119,11 +121,88 @@ class Visualize:
 			w.create_line(coords[base1]["x"], coords[base1]["y"], 
 				      coords[base2]["x"], coords[base2]["y"])
 
-		# Enter main event loop
-		mainloop()	
+		# Output to file
+		canvasvg.saveall("circle.svg", w)
+	
+	def viz_mountain(self, seq, sstr):
+		"""Returns svg of secondary structure mountain plot"""
 		
-<<<<<<< HEAD
-=======
+		import math
+		import canvasvg
+		from Tkinter import *
+
+		# Create a Tk instance
+		master = Tk()
+		master.title("Mountain Plot")
+		master.resizable(width = 0, height = 0)
+
+		# Create canvas
+		canvaswidth = 800
+		canvasheight = 600
+		w = Canvas(master, width = canvaswidth, height = canvasheight)
+		w.pack()
+		w.configure(background = "white")	
+
+		def find_enclosures(seq, sstr):
+			enclosures = []
+			max_enclosures = 0
+			for i in seq:
+				enclosures.append({"base": i, "enclosures": 0})
+			for b1, b2 in sstr:
+				for j in enclosures[(b1 + 1):b2]:
+					j["enclosures"] += 1
+					if max_enclosures < j["enclosures"]:
+						max_enclosures += 1
+			return (enclosures, max_enclosures)
+
+		enclosures, max_enclosures = find_enclosures(seq, sstr)
+
+		# Define bounding box of plot and other plot variables
+		plot_x1 = 100
+		plot_x2 = canvaswidth - 150
+		plot_y1 = 50
+		plot_y2 = canvasheight - 50
+		xinc = (plot_x2 - plot_x1) / len(seq)
+		yinc = (plot_y2 - plot_y1) / max_enclosures
+
+		# Draw axes and labels
+		w.create_line(plot_x1, plot_y1, plot_x1, plot_y2)
+		w.create_line(plot_x1, plot_y2, plot_x2, plot_y2)
+		w.create_text((plot_x2 - plot_x1) / 2 + plot_x1, plot_y2 + 30, text = "Sequence Position")
+		w.create_text(plot_x1, plot_y1 - 15, text = "Enclosing Base Pairs")
+
+		# Draw tick marks
+		for i in range(10):
+			w.create_line
+
+		# Draw legend
+		if 'U' in seq:
+			colors = {'G': "green", 'C': "blue", 'A': "red", 'U': "yellow"}	
+		else:
+			colors = {'G': "green", 'C': "blue", 'A': "red", 'T': "yellow"}	
+		legendx = plot_x2 + 20
+		legendy = plot_y1 + 70
+		w.create_rectangle(legendx - 20, legendy - 20, legendx + 50, legendy + 100)
+		w.create_text(legendx - 10, legendy - 10, anchor = NW, text="LEGEND:")
+		for index, (key, value) in enumerate(colors.iteritems()):
+			w.create_oval(legendx - 2, legendy + 20 + 20*index, legendx + 2, legendy + 24 + 20*index, outline = value, fill = value)
+			w.create_text(legendx + 20, legendy + 22 + 20*index, text=key)
+
+		# Draw bases
+		points = []
+		for index, entry in enumerate(enclosures):
+			base, height = entry["base"], entry["enclosures"]
+			xcoord = index * xinc + plot_x1
+			ycoord = plot_y2 - height * yinc
+			points.append({"x": xcoord, "y": ycoord})
+			w.create_oval(xcoord - 4, ycoord - 4, xcoord + 4, ycoord + 4, outline = colors[base], fill = colors[base])
+
+		# Connect the dots
+		for index, point in enumerate(points[1:]):
+			w.create_line(point["x"], point["y"], points[index]["x"], points[index]["y"], fill = "black")
+
+		canvasvg.saveall("mountainplot.svg", w)
+	
 	def viz_planar(self,seq,sstr):
 		"""Return bmp of planar secondary structure graph"""
 
@@ -228,5 +307,4 @@ class Visualize:
 				
 				# Enter main event loop
 				mainloop()
-				
->>>>>>> 009f1b0e856e812be3a9d3c0ffdcd5aefd108c11
+			
