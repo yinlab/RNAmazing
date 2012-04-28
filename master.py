@@ -185,28 +185,41 @@ def nussinov_algorithm(multiple_permutations):
 		vis.viz_arc(sstr, seq)
 
 
+	# real-time recalculation set-up
 	while True:
 
 		# gets user input for any updates
 		option = "q"
-		while (option != "y") & (option != "n"):
-			option = raw_input("Would you like to make an update to your structure? [y/n]: ")
-		else:
-			if option == "y":
-				strand_name = raw_input("Which strand would you like to update?  ")
-				strand_index = (raw_input("Which zero-indexed base on this strand would you like to modify?  "))
-				new_base = raw_input("What base would you like to modify " + strand_name + "[" + strand_index + "] to?  " )
-				strand_index = int(strand_index)
-			elif option == "n":
-				sys.exit()
+		input_valid = False
+		while (input_valid == False):
+			while (option != "y") & (option != "n"):
+				option = raw_input("Would you like to make an update to your structure? [y/n]: ")
+			else:
+				if option == "y":
+					strand_name = raw_input("Which strand would you like to update?  ")
+					strand_index = (raw_input("Which zero-indexed base on this strand would you like to modify?  "))
+					new_base = raw_input("What base would you like to modify " + strand_name + "[" + strand_index + "] to?  " )
+					strand_index = int(strand_index)
+				elif option == "n":
+					sys.exit()
+			
+			try:
+				new_struct = prediction.Recalculation(best_nussinov_score_matrix, element, strand_name, strand_index, new_base)
+				input_valid = True
+			except classes.StrandNameError:
+				print "ERROR:  There is no strand with the name " + strand_name
+			except classes.BaseIndexError:
+				print "ERROR:  [" + strand_index + "] is not a proper index for " + strand_name 
+			except classes.DNABaseError:
+				print "ERROR:  DNA sequences can only consist of A, T, C, & G"
+			except classes.RNABaseError:
+				print "ERROR:  RNA sequences can only consist of A, U, C, & G"
 
 		# re-initializes empty lists
 		list_of_nussinov_structures = []
 		list_of_nussinov_matrices = []
 
 		for element in multiple_permutations.permutations():
-			# sets up environment for real-time recalculation
-			#best_perm = best_nussinov.get_permutation()
 			new_struct = prediction.Recalculation(best_nussinov_score_matrix, element, strand_name, strand_index, new_base)
 			new_struct.predict_structure()
 			list_of_nussinov_structures.append(new_struct.to_structure())
@@ -216,6 +229,8 @@ def nussinov_algorithm(multiple_permutations):
 			print (new_struct.to_structure()).get_pairs()
 			print len((new_struct.to_structure()).get_pairs())
 
+		def len_fun(x):
+			return len(x.get_pairs())
 		list_of_nussinov_scores = map(len_fun, list_of_nussinov_structures)
 		index_of_best = list_of_nussinov_scores.index(max(list_of_nussinov_scores))
 		best_nussinov = list_of_nussinov_structures.pop(index_of_best)
@@ -241,14 +256,47 @@ def nussinov_algorithm(multiple_permutations):
 			vis.viz_circle(sstr, seq)
 		elif visualization_type == "ARC":
 			vis.viz_arc(sstr, seq)
-
 	else:
 		sys.exit()
 
-def zuker_algorithm():
-	print "coming soon.."
+def zuker_algorithm(multiple_permutations):
+	# creates a list of all possible nussinov structures and score matrices
+	list_of_zuker_structures = []
+	list_of_zuker_matrices = []
+	for element in multiple_permutations.permutations():
+		zuker = prediction.ZukerPredictor(element,None)
+		zuker.generate_score_matrix()
+		zuker.traceback()
+		list_of_zuker_structures.append(zuker.to_structure())
+		list_of_zuker_matrices.append(zuker.to_score_matrix())
 	
+	def len_fun(x):
+		return len(x.get_pairs())
+	
+	list_of_zuker_scores = map(len_fun, list_of_zuker_structures)
+	index_of_best = list_of_zuker_scores.index(max(list_of_zuker_scores))
+	best_zuker = list_of_zuker_structures.pop(index_of_best)
+	best_zuker_score_matrix = list_of_zuker_matrices[index_of_best]
 
+	# generates variables to represent the secondary structure and sequence of output
+	sstr = best_zuker.get_pairs()
+	seq = best_zuker.get_sequence()
+
+	print "Best structure..."
+	print "Pair list: "
+	print sstr
+	print "Sequence: " + seq
+
+	# pass output to visualization module
+	visualization_type = string.upper(sys.argv[2])
+	vis = visualization.Visualize()
+	if visualization_type == "DOTPAREN":
+		print "In dot-paren notation: " 
+		print vis.viz_bracket(sstr, seq)
+	elif visualization_type == "CIRCLE":
+		vis.viz_circle(sstr, seq)
+	elif visualization_type == "ARC":
+		vis.viz_arc(sstr, seq)
 
 
 #./master.py filename.txt visualization algorithm

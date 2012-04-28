@@ -193,7 +193,7 @@ class Recalculation:
 		self.old_score_matrix = scorematrix
 		l = len(original_permutation.get_concatamer())
 		self.new_score_matrix = ScoreMatrix(l,l)
-		(self.new_permutation, self.change_index) = original_permutation.simple_transformation(strand_name,index,base)
+		(self.new_permutation, self.change_index) = original_permutation.substitution(strand_name,index,base)
 		
 	def delta(self, ni, nj):
 		pair = set([ni, nj])
@@ -544,7 +544,7 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 							break
 		
 		trace(0, self.score_matrix.get_width() - 1)
-		self.pairs = Structure(pairs,self.permutation)
+		self.pairs = pairs
 		return self.pairs
 		
 	def predict_structure(self):
@@ -558,7 +558,8 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 		"""
 		Returns the predicted secondary structure calculated by #predict_structure
 		"""
-		return self.pairs
+		self.structure_obj = Structure(self.pairs, self.permutation)
+		return self.structure_obj
 		
 	def to_score_matrix(self):
 		"""
