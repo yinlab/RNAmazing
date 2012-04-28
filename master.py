@@ -2,16 +2,11 @@
 
 # RNAmazing:  CS51 Final Project
 
-# Format for input from text file is {strand name;material;sequence} 
-# with each strand separated by a new line character
-
-
 # imports necessary python libraries
 import sys
 import fnmatch
 import re
 import string
-
 
 # imports .py files we have created
 import classes
