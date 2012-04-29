@@ -1,4 +1,4 @@
-from classes import * 
+from classes import *
 import string
 import csv
 import sys
@@ -33,7 +33,7 @@ class AbstractSingleStrandPredictor:
 		
 		l = len(self.permutation.get_concatamer())
 		self.score_matrix = ScoreMatrix(l,l)
-		(self.permutation, self.change_index) = self.permutation.simple_transformation(strand_name,index,base)
+		(self.permutation, self.change_index) = self.permutation.substitution(strand_name,index,base)
 		self.update_score_matrix(l)
 		
 	def update_score_matrix(self,width):
@@ -80,7 +80,7 @@ class NussinovPredictor(AbstractSingleStrandPredictor):
 	Implements Nussinov's dynamic programming algorithm for predicting 
 	secondary structure by maximizing the number of paired bases.
 	"""
-	
+
 	def __init__(self, permutation, score_matrix=None):
 		"""
 		Initializes from a Permutation and a (possibly empty) ScoreMatrix
@@ -428,5 +428,5 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 							break
 		
 		trace(0, self.score_matrix.get_width() - 1)
-		self.pairs = Structure(pairs,self.permutation)
+		self.pairs = pairs
 		return self.pairs

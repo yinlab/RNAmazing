@@ -3,6 +3,7 @@ import sys
 import classes
 import string
 import csv
+import exceptions
 
 class Strand:
 	def __init__ (self, material, name, sequence):
@@ -131,8 +132,7 @@ class Permutation:
 		return separator.join(map(lambda strand: strand.name, self.strands))
 		
 	
-	# don't think we should be using print or sys.exit but we'll see
-	def simple_transformation(self, strand_name, index, new_base):
+	def substitution(self, strand_name, index, new_base):
 		"""
 		Updates the instance of the strand that is being updated by a substitution
 		"""		
@@ -140,27 +140,23 @@ class Permutation:
 		try:
 			strands_index = (self.get_names()).index(string.upper(strand_name))
 		except ValueError:
-			print "This strand does not exist"
-			sys.exit()
-			
+			raise classes.StrandNameError
+
 		# checks to make sure base substitution is valid
 		sub = string.upper(new_base)
 		if (self.strands[strands_index]).material == "DNA":
 			if (sub != 'A') & (sub != 'T') & (sub != 'C') & (sub != 'G'):
-				print "ERROR:  DNA sequences can only consist of A, T, C, & G"
-				sys.exit()
+				raise classes.DNABaseError
 		elif (self.strands[strands_index]).material == "RNA":
 			if (sub != 'A') & (sub != 'U') & (sub != 'C') & (sub != 'G'):
-				print "ERROR:  RNA sequences can only consist of A, U, C, & G"
-				sys.exit()	
+				raise classes.RNABaseError
 
 		# performs update to strand
 		strand_as_list = list((self.strands[strands_index]).sequence)
 		try:
 			strand_as_list[index] = sub		
 		except IndexError:
-			print "ERROR:  Non-valid index value"
-			sys.exit()
+			raise classes.BaseIndexError
 			
 		strand_as_string = "".join(strand_as_list)
 		self.strands[strands_index] = (self.strands[strands_index]).update_seq(strand_as_string)
@@ -237,3 +233,19 @@ class State:
 	def get_as_tuples(self):
 		"""Returns list of (Permutation, ScoreMatrix) tuples, as passed to the initiator"""
 		pass
+
+class StrandNameError(exceptions.Exception):
+	def __init__(self):
+		return
+
+class BaseIndexError(exceptions.Exception):
+	def __init__(self):
+		return
+
+class DNABaseError(exceptions.Exception):
+	def __init__(self):
+		return
+		
+class RNABaseError(exceptions.Exception):
+	def __init__(self):
+		return
