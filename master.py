@@ -161,6 +161,8 @@ def import_fasta():
 	sequence = ""
 	
 	for line in file:
+		line = line.upper()
+		line = line.strip("\n")
 		if line[:1] == ">":
 			if (strand_index > -1) & (sequence != ""):
 				print "Sequence: " + sequence
@@ -170,10 +172,8 @@ def import_fasta():
 			sequence = ""
 			material = None
 			title = line[1:].partition(" ")[0]
-			print "Strand name: " + title
+			print "\nStrand name: " + title
 		else: 
-			line = line.upper()
-			line = line.strip("\n")
 			for c in line:
 				if material == None:
 					if c == "T":
