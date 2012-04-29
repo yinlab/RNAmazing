@@ -235,7 +235,7 @@ def algorithm_operator(multiple_permutations, algorithm):
 	print sstr
 	print "Sequence: " + seq
 	
-	return (sstr, seq)
+	return (sstr, seq, list_of_matrices)
 
 
 # visualization function
@@ -251,11 +251,10 @@ def visualization_fun(sstr, seq, visualization_type):
 	elif visualization_type == "MOUNTAIN":
 		vis.viz_mountain(sstr, seq)
 
-
 def nussinov_algorithm(multiple_permutations):
 
 	# finds result of nussinov algorithm
-	(sstr, seq) = algorithm_operator(multiple_permutations, "nussinov")
+	(sstr, seq, matrices) = algorithm_operator(multiple_permutations, "nussinov")
 	
 	# pass output to visualization module
 	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
@@ -278,7 +277,7 @@ def nussinov_algorithm(multiple_permutations):
 					sys.exit()
 			
 			try:
-				new_struct = prediction.Recalculation(best_nussinov_score_matrix, element, strand_name, strand_index, new_base)
+				new_struct = prediction.Recalculation(matrices[0], (multiple_permutations.permutations())[0], strand_name, strand_index, new_base)
 				input_valid = True
 			except classes.StrandNameError:
 				print "ERROR:  There is no strand with the name " + strand_name
@@ -293,13 +292,13 @@ def nussinov_algorithm(multiple_permutations):
 		list_of_nussinov_structures = []
 		list_of_nussinov_matrices = []
 
-		for element in multiple_permutations.permutations():
-			new_struct = prediction.Recalculation(best_nussinov_score_matrix, element, strand_name, strand_index, new_base)
+		for i in range (0, len(multiple_permutations.permutations())):
+			new_struct = prediction.Recalculation(matrices[i], (multiple_permutations.permutations())[i], strand_name, strand_index, new_base)
 			new_struct.predict_structure()
 			list_of_nussinov_structures.append(new_struct.to_structure())
 			list_of_nussinov_matrices.append(new_struct.to_score_matrix())
-			print "Permutation: "+ element.get_name()
-			print element.get_concatamer("")
+			print "Permutation: "+ ((multiple_permutations.permutations())[i]).get_name()
+			print ((multiple_permutations.permutations())[i]).get_concatamer("")
 			print (new_struct.to_structure()).get_pairs()
 			print len((new_struct.to_structure()).get_pairs())
 
@@ -322,6 +321,9 @@ def nussinov_algorithm(multiple_permutations):
 
 		# pass output to visualization module
 		visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
+		
+		# reupdates matrices definition
+		matrices = list_of_nussinov_matrices
 	
 	else:
 		sys.exit()
@@ -329,13 +331,14 @@ def nussinov_algorithm(multiple_permutations):
 
 def zuker_algorithm(multiple_permutations):
 
-	(sstr, seq) = algorithm_operator(multiple_permutations, "zuker")
+	# performs algorithm operation
+	(sstr, seq, matrices) = algorithm_operator(multiple_permutations, "zuker")
 
 	# pass output to visualization module
 	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )
 
 
-#./master.py filename.txt visualization algorithm
+#./master.py filename.txt visualization algorithm input
 def main():
 	cmdline_validation()
 	if (string.upper(sys.argv[3]) == "NUSSINOV"):
