@@ -190,14 +190,34 @@ def import_fasta():
 	return multiple_permutations					
 					
 
-def nussinov_algorithm(multiple_permutations):
+#def nussinov_algorithm(multiple_permutations):
 
-	# prints all possible permutations
-	print "Testing multiple permutations with Nussinov Algorithm..."
+#	# prints all possible permutations
+#	print "Testing multiple permutations with Nussinov Algorithm..."
 
 	# creates a list of all possible nussinov structures and score matrices
-	list_of_nussinov_structures = []
-	list_of_nussinov_matrices = []
+#	list_of_nussinov_structures = []
+#	list_of_nussinov_matrices = []
+
+
+def find_best(structures):
+	def len_fun(x):
+		return len(x.get_pairs())
+	scores = map(len_fun, structures)
+	index_of_best = scores.index(max(scores))
+	best_struct = structures.pop(index_of_best)
+
+	# generates variables to represent the secondary structure and sequence of output
+	sstr = best_struct.get_pairs()
+	seq = best_struct.get_sequence()
+
+	print "Best structure..."
+	print "Pair list: "
+	print sstr
+	print "Sequence: " + seq
+	
+	return (sstr, seq)
+
 
 def algorithm_operator(multiple_permutations, algorithm):
 
@@ -205,6 +225,7 @@ def algorithm_operator(multiple_permutations, algorithm):
 	list_of_structures = []
 	list_of_matrices = []
 
+	# performs algorithms on all possible permutations
 	for element in multiple_permutations.permutations():
 		print "Permutation: "+element.get_name()
 		print element.get_concatamer("")
@@ -216,27 +237,28 @@ def algorithm_operator(multiple_permutations, algorithm):
 		list_of_structures.append(struct.to_structure())
 		list_of_matrices.append(struct.to_score_matrix())
 		print (struct.to_structure()).get_pairs()
-
+	
+	(seq,sstr) = find_best(list_of_structures)
+	
+	return (seq, sstr, list_of_matrices)
+	
 	# determining best case scenario of the multiple permutations
-	def len_fun(x):
-		return len(x.get_pairs())
-	list_of_scores = map(len_fun, list_of_structures)
-	index_of_best = list_of_scores.index(max(list_of_scores))
-	best_struct = list_of_structures.pop(index_of_best)
-
-	best_score_matrix = list_of_matrices[index_of_best]
+#	def len_fun(x):
+#		return len(x.get_pairs())
+#	list_of_scores = map(len_fun, list_of_structures)
+#	index_of_best = list_of_scores.index(max(list_of_scores))
+#	best_struct = list_of_structures.pop(index_of_best)
+#	best_score_matrix = list_of_matrices[index_of_best]
 
 	# generates variables to represent the secondary structure and sequence of output
-	sstr = best_struct.get_pairs()
-	seq = best_struct.get_sequence()
+#	sstr = best_struct.get_pairs()
+#	seq = best_struct.get_sequence()
 
-	print "Best structure..."
-	print "Pair list: "
-	print sstr
-	print "Sequence: " + seq
-	
-	return (sstr, seq, list_of_matrices)
-
+#	print "Best structure..."
+#	print "Pair list: "
+#	print sstr
+#	print "Sequence: " + seq	
+#	return (sstr, seq, list_of_matrices)
 
 # visualization function
 def visualization_fun(sstr, seq, visualization_type):
@@ -302,31 +324,17 @@ def nussinov_algorithm(multiple_permutations):
 			print (new_struct.to_structure()).get_pairs()
 			print len((new_struct.to_structure()).get_pairs())
 
-		def len_fun(x):
-			return len(x.get_pairs())
-		list_of_nussinov_scores = map(len_fun, list_of_nussinov_structures)
-		index_of_best = list_of_nussinov_scores.index(max(list_of_nussinov_scores))
-		best_nussinov = list_of_nussinov_structures.pop(index_of_best)
+		# finds best structure
+		(sstr, seq) = find_best(list_of_nussinov_structures)
 
-		best_nussinov_score_matrix = list_of_nussinov_matrices[index_of_best]
-
-		# generates variables to represent the secondary structure and sequence of output
-		sstr = best_nussinov.get_pairs()
-		seq = best_nussinov.get_sequence()
-
-		print "Best structure..."
-		print "Pair list: "
-		print sstr
-		print "Sequence: " + seq
+		# reupdates matrices definition
+		matrices = list_of_nussinov_matrices
 
 		# pass output to visualization module
 		visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
 		
-		# reupdates matrices definition
-		matrices = list_of_nussinov_matrices
-	
-	else:
-		sys.exit()
+
+
 
 
 def zuker_algorithm(multiple_permutations):
