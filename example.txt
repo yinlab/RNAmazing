@@ -1,1 +1,3 @@
 {strand1;dna;aaaaaa}
+{strand2;dna;atacaaa}
+{strand3;dna;atacggca}
