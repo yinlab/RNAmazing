@@ -295,9 +295,9 @@ def nussinov_algorithm(multiple_permutations):
 				new_struct = prediction.Recalculation(matrices[0], (multiple_permutations.permutations())[0], strand_name, strand_index, new_base)
 				input_valid = True
 			except classes.StrandNameError:
-				print "ERROR:  There is no strand with the name " + strand_name
+				print "ERROR:  There is no strand with this name"
 			except classes.BaseIndexError:
-				print "ERROR:  [" + strand_index + "] is not a proper index for " + strand_name 
+				print "ERROR:  Improper Index" 
 			except classes.DNABaseError:
 				print "ERROR:  DNA sequences can only consist of A, T, C, & G"
 			except classes.RNABaseError:
