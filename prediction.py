@@ -250,24 +250,25 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 		
 		# Energies for coaxial stacks between each type of base pair
 		stack_energies = {
-						"AU": {
-							"AU": -0.9, "CG": -1.8, "GC": -2.3, "UA": -1.1, "GU": -1.1, "UG": -0.8,
-						}, "CG": {
-							"AU": -1.7, "CG": -2.9, "GC": -3.4, "UA": -2.3, "GU": -2.1, "UG": -1.4,
-						}, "GC": {
-							"AU": -2.1, "CG": -2.0, "GC": -2.9, "UA": -1.8, "GU": -1.9, "UG": -1.2,
-						}, "UA": {
-							"AU": -0.9, "CG": -1.7, "GC": -2.1, "UA": -0.9, "GU": -1.0, "UG": -0.5,
-						}, "GU": {
-							"AU": -0.5, "CG": -1.2, "GC": -1.4, "UA": -0.8, "GU": -0.4, "UG": -0.2,
-						}, "UG": {
-							"AU": -1.0, "CG": -1.9, "GC": -2.1, "UA": -1.1, "GU": -1.5, "UG": -0.4,
-						}
+			"AU": {
+				"AU": -0.9, "CG": -1.8, "GC": -2.3, "UA": -1.1, "GU": -1.1, "UG": -0.8,
+			}, "CG": {
+				"AU": -1.7, "CG": -2.9, "GC": -3.4, "UA": -2.3, "GU": -2.1, "UG": -1.4,
+			}, "GC": {
+				"AU": -2.1, "CG": -2.0, "GC": -2.9, "UA": -1.8, "GU": -1.9, "UG": -1.2,
+			}, "UA": {
+				"AU": -0.9, "CG": -1.7, "GC": -2.1, "UA": -0.9, "GU": -1.0, "UG": -0.5,
+			}, "GU": {
+				"AU": -0.5, "CG": -1.2, "GC": -1.4, "UA": -0.8, "GU": -0.4, "UG": -0.2,
+			}, "UG": {
+				"AU": -1.0, "CG": -1.9, "GC": -2.1, "UA": -1.1, "GU": -1.5, "UG": -0.4,
+			}
 		}
 		
 		# Constant multiloop penalty
 		a = 5
 		
+		# Returns the loop energy of a k-loop with the given size
 		# k = 1 -> hairpin
 		# k = 2 -> bulge
 		# k = 3 -> internal loop
@@ -282,27 +283,31 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 			else:
 				return energy
 		
+		# Returns the stacking energy for base between i,j and ip, jp 
 		def stack_energy(i,j,ip,jp):
-			key = "".join(sorted([base(i),base(j)]))
-			keyp = "".join(sorted([base(ip),base(jp)]))
+			key = "".join([base(i),base(j)])
+			keyp = "".join([base(ip),base(jp)])
 			if (key in stack_energies) and (keyp in stack_energies[key]):
 				return stack_energies[key][keyp]
 			else:
 				return 0
 			
 		def base(k):
-			return seq[k]
+			return seq[k] if seq[k]!='T' else 'U'
 		
+		# Returns the size of a loop enclosed by i,j with ip, jp accessible
 		def loop_size(i,j,ip,jp):
-			# TODO: add absolute value?
-			return max(ip-i,j-jp)
+			return max(abs(ip-i),abs(j-jp))
 			
+		# Hairpin energy
 		def eh(i, j):
 			return loop_energy(1,abs(i-j))
 		
+		# Stacking energy
 		def es(i, j):
 			return stack_energy(i,j,i+1,j-1)
 		
+		# Bulge/internal loop energy
 		def ebi(i, j, ip, jp):
 			[min_ij, max_ij] = sorted([ip-i,j-jp])
 			
@@ -312,14 +317,15 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 			loop_size = max_ij
 			return loop_energy(loop_type, loop_size)
 		
+		# V values for bulge/internal loop(s)
 		def VBI(i, j):
 			return min([ebi(i, j, ip, jp) + V(ip, jp) for ip in range(i, j) for jp in range(ip, j) if ip - i + j - jp > 2])
-
-
 					
+		# V values for multiloops
 		def VM(i, j):
 			return min(W(i + 1, k) + W(k + 1, j - 1) for k in range(i, j - 1)) + a
 		
+		# V matrix represents the optimal substructure scores if i,j are paired to one another
 		def V(i, j):
 			if(self.score_matrix_v.has(i, j)):
 				return self.score_matrix_v.get(i, j)
@@ -328,7 +334,8 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 						es(i, j) + V(i + 1, j - 1),
 						VBI(i, j),
 						VM(i, j))
-		
+				
+		# W represents the scores of optimal substructures (analogous to gamma in Nussinov)
 		def W(i, j):
 			if(self.score_matrix.has(i, j)):
 				return self.score_matrix.get(i, j)
@@ -338,15 +345,17 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 				w3 = V(i, j)
 				w4 = min([W(i, k) + W(k + 1, j) for k in range(i, j)] if (i!=j)  else [float("inf")])
 				
-				out_val = min(w1, w2, w3, w4)
-				return out_val
-
-		
+				return min(w1, w2, w3, w4)
 
 				
 		# populate main diagonal of score matrix with zeroes
 		if l < 4:
 			# populate score matrix entirely with infinity
+			
+			for i in range(0,l):
+				for j in range(0,l):
+					self.score_matrix.set(i,j,float("inf"))
+					self.score_matrix_v.set(i,j,float("inf"))
 			pass
 		
 		# We want this, ultimately:
@@ -375,11 +384,11 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 					self.score_matrix.set(i, j, float("inf"))
 					self.score_matrix_v.set(i, j, float("inf")) 		
 					
-		# ...then do the bottom nine
-		for i in range(l-3,l):
-			for j in range(l-3,l):
-				self.score_matrix.set(i, j, float("inf"))
-				self.score_matrix_v.set(i, j, float("inf")) 		
+			# ...then do the bottom nine
+			for i in range(l-3,l):
+				for j in range(l-3,l):
+					self.score_matrix.set(i, j, float("inf"))
+					self.score_matrix_v.set(i, j, float("inf")) 		
 		
 		# Do the main thing
 #		for i in range(1, l):
