@@ -40,9 +40,9 @@ def cmdline_validation():
 
 def import_from_file():
 	if string.upper(sys.argv[4]) == "DEFAULT":
-		import_default()
+		return import_default()
 	else:
-		import_fasta()
+		return import_fasta()
 			
 # checks validity of input file format, and returns a Permutations object
 def import_default():
@@ -144,9 +144,9 @@ def import_default():
 		# Permutations object
 		strand_obj = classes.Strand(material, strand_name, sequence)
 		strands_list.append(strand_obj)	
-		multiple_permutations = classes.Permutations(strands_list)
-		return multiple_permutations
+	multiple_permutations = classes.Permutations(strands_list)
 	file.close()
+	return multiple_permutations
 
 def import_fasta():
 	try: 
@@ -186,9 +186,9 @@ def import_fasta():
 	strand_obj = classes.Strand(material, title, sequence)
 	strands_list.append(strand_obj)	
 	multiple_permutations = classes.Permutations(strands_list)
+	file.close()
 	return multiple_permutations					
 					
-	file.close()
 
 def nussinov_algorithm(multiple_permutations):
 
