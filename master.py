@@ -39,7 +39,7 @@ def cmdline_validation():
 			sys.exit()
 
 def import_from_file():
-	if sys.argv[4] == "DEFAULT":
+	if string.upper(sys.argv[4]) == "DEFAULT":
 		import_default()
 	else:
 		import_fasta()
@@ -163,25 +163,26 @@ def import_fasta():
 	if firstline[:1] != ">":
 		print "ERROR: File must begin with a > character"
 	firstline = firstline.rstrip("\n")
-	title = firstline.partition(" ")[0]
+	title = firstline[1:].partition(" ")[0]
 	print "Strand name: " + title
 	
 	for line in file.readlines():
 		line = line.upper()
 		line = line.rstrip("\n")			
-			for c in line:
-				if material == None:
-					if c == "T":
-						material == "DNA"
-						print "Material: " + material
-					elif c == "U":
-						material == "RNA"
-						print "Material: " + material
-				else:
-					if (c != 'A') & (c != 'T') & (c != 'U') & (c != 'C') & (c != 'G'):
-						print "ERROR: Invalid characters in sequence"
-						sys.exit()
-					sequence += c
+		for c in line:
+			if material == None:
+				if c == "T":
+					material = "DNA"
+					print "Material: " + material
+				elif c == "U":
+					material = "RNA"
+					print "Material: " + material
+			if (c != 'A') & (c != 'T') & (c != 'U') & (c != 'C') & (c != 'G'):
+				print "ERROR: Invalid characters in sequence"
+				sys.exit()
+			sequence += c
+	print "Sequence: " + sequence
+	
 	strand_obj = classes.Strand(material, title, sequence)
 	strands_list.append(strand_obj)	
 	multiple_permutations = classes.Permutations(strands_list)
