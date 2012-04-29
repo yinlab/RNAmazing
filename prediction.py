@@ -199,6 +199,9 @@ class Recalculation(NussinovPredictor):
 		"""
 		self.permutation = original_permutation
 		self.update(strand_name, index, base, scorematrix)
+	
+	def as_permutations(self):
+		return 
 		
 
 class ZukerPredictor(AbstractSingleStrandPredictor):
