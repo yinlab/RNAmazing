@@ -188,17 +188,7 @@ def import_fasta():
 	multiple_permutations = classes.Permutations(strands_list)
 	file.close()
 	return multiple_permutations					
-					
-
-#def nussinov_algorithm(multiple_permutations):
-
-#	# prints all possible permutations
-#	print "Testing multiple permutations with Nussinov Algorithm..."
-
-	# creates a list of all possible nussinov structures and score matrices
-#	list_of_nussinov_structures = []
-#	list_of_nussinov_matrices = []
-
+				
 
 def find_best(structures):
 	def len_fun(x):
