@@ -17,26 +17,35 @@ import master
 
 # checks validity of command line arguments
 def cmdline_validation():
-	if (len(sys.argv) != 4):
-		print "Usage: python master.py filename.txt visualization algorithm"
+	if (len(sys.argv) != 5):
+		print "Usage: python master.py filename.txt visualization algorithm input"
 		sys.exit()
 	else:
 		file = sys.argv[1]
 		third_arg = string.upper(sys.argv[2])
 		fourth_arg = string.upper(sys.argv[3])
+		fifth_arg = string.upper(sys.argv[4])
 		if (third_arg != "CIRCLE") & (third_arg != "DOTPAREN") & (third_arg != "ARC") & (third_arg != "MOUNTAIN"):
 			print "Usage: possible visualization types include DOTPAREN CIRCLE ARC MOUNTAIN"
 			sys.exit()
 		if (fourth_arg != "NUSSINOV") & (fourth_arg != "ZUKER"):
 			print "Usage: possible algorithm types include NUSSINOV ZUKER"
 			sys.exit()
+		if (fifth_arg != "DEFAULT") & (fifth_arg != "FASTA"):
+			print "Usage: possible input types include DEFAULT FASTA"
+			sys.exit()
 		if not(fnmatch.fnmatch(file, '*.txt')):
 			print "File should be of type '.txt'"
 			sys.exit()
 
-# checks validity of input file format, and returns a Permutations object
 def import_from_file():
-	
+	if sys.argv[4] == "DEFAULT":
+		import_default()
+	else:
+		import_fasta()
+			
+# checks validity of input file format, and returns a Permutations object
+def import_default():
 	# tries to open file
 	try:
 		file = open(sys.argv[1])
@@ -139,8 +148,47 @@ def import_from_file():
 		return multiple_permutations
 	file.close()
 
+def import_fasta():
+	try: 
+		file = open(sys.argv[1])
+	except IOError:
+		print "File cannot be opened!"
+		sys.exit()
+		
+	strands_list = []
+	sequence = ""
+	material = None
+	
+	firstline = file.readline()
+	if firstline[:1] != ">":
+		print "ERROR: File must begin with a > character"
+	firstline = firstline.rstrip("\n")
+	title = firstline.partition(" ")[0]
+	print "Strand name: " + title
+	
+	for line in file.readlines():
+		line = line.upper()
+		line = line.rstrip("\n")			
+			for c in line:
+				if material == None:
+					if c == "T":
+						material == "DNA"
+						print "Material: " + material
+					elif c == "U":
+						material == "RNA"
+						print "Material: " + material
+				else:
+					if (c != 'A') & (c != 'T') & (c != 'U') & (c != 'C') & (c != 'G'):
+						print "ERROR: Invalid characters in sequence"
+						sys.exit()
+					sequence += c
 
-
+	strand_obj = classes.Strand(material, title, sequence)
+	strands_list.append(strand_obj)	
+	multiple_permutations = classes.Permutations(strands_list)
+	return multiple_permutations					
+					
+	file.close()
 
 def nussinov_algorithm(multiple_permutations):
 
