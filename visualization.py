@@ -65,8 +65,8 @@ class Visualize:
 
 
 		# Output to file
-		canvasvg.saveall("arc.svg", w)	
-
+		#canvasvg.saveall("arc.svg", w)	
+		mainloop()
 
 	def viz_circle(self, sstr, seq):
 		"""
@@ -118,10 +118,11 @@ class Visualize:
 		# Draw segments between bases
 		for base1, base2 in sstr:
 			w.create_line(coords[base1]["x"], coords[base1]["y"], 
-				      coords[base2]["x"], coords[base2]["y"])
+				      coords[base2]["x"], coords[base2]["y"], fill = "red")
 
 		# Output to file
-		canvasvg.saveall("circle.svg", w)
+		#canvasvg.saveall("circle.svg", w)
+		mainloop()
 	
 	def viz_mountain(self, sstr, seq):
 		"""
@@ -197,4 +198,5 @@ class Visualize:
 		for index, point in enumerate(points[1:]):
 			w.create_line(point["x"], point["y"], points[index]["x"], points[index]["y"], fill = "black")
 
-		canvasvg.saveall("mountainplot.svg", w)
+		#canvasvg.saveall("mountainplot.svg", w)
+		mainloop()
