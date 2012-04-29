@@ -152,43 +152,46 @@ def import_fasta():
 	try: 
 		file = open(sys.argv[1])
 	except IOError:
-		print "File cannot be opened!"
+		print "File cannot be opened."
 		sys.exit()
 		
 	strands_list = []
-	sequence = ""
+	strand_index = -1
 	material = None
+	sequence = ""
 	
-	firstline = file.readline()
-	if firstline[:1] != ">":
-		print "ERROR: File must begin with a > character"
-	firstline = firstline.rstrip("\n")
-	title = firstline[1:].partition(" ")[0]
-	print "Strand name: " + title
-	
-	for line in file.readlines():
-		line = line.upper()
-		line = line.rstrip("\n")			
-		for c in line:
-			if material == None:
-				if c == "T":
-					material = "DNA"
-					print "Material: " + material
-				elif c == "U":
-					material = "RNA"
-					print "Material: " + material
-			if (c != 'A') & (c != 'T') & (c != 'U') & (c != 'C') & (c != 'G'):
-				print "ERROR: Invalid characters in sequence"
-				sys.exit()
-			sequence += c
+	for line in file:
+		if line[:1] == ">":
+			if (strand_index > -1) & (sequence != ""):
+				print "Sequence: " + sequence
+				strand_obj = classes.Strand(material, title, sequence)
+				strands_list.append(strand_obj)	
+			strand_index += 1
+			sequence = ""
+			material = None
+			title = line[1:].partition(" ")[0]
+			print "Strand name: " + title
+		else: 
+			line = line.upper()
+			line = line.strip("\n")
+			for c in line:
+				if material == None:
+					if c == "T":
+						material = "DNA"
+						print "Material: " + material
+					elif c == "U":
+						material = "RNA"
+						print "Material: " + material
+				if (c != 'A') & (c != 'T') & (c != 'U') & (c != 'C') & (c != 'G'):
+					print "ERROR: Invalid characters in sequence"
+					sys.exit()
+				sequence += c
 	print "Sequence: " + sequence
-	
 	strand_obj = classes.Strand(material, title, sequence)
 	strands_list.append(strand_obj)	
 	multiple_permutations = classes.Permutations(strands_list)
 	file.close()
-	return multiple_permutations					
-					
+	return multiple_permutations							
 
 def nussinov_algorithm(multiple_permutations):
 
