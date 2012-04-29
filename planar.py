@@ -18,48 +18,49 @@ class RNA:
         """
         Construct initial base + pair list
         """
-        seq_list = []
+        self.seq_list = []
+        self.seq = seq
         for i in seq:
-            seq_list.append({"base": i, "pair": -1, "mark": False})
+            self.seq_list.append({"base": i, "pair": -1, "mark": False})
             for b1, b2 in sstr:
-                seq_list[b1]["pair"] = b2
+                self.seq_list[b1]["pair"] = b2
                 
     def regions (self):
         """
         Define stem regions
         """
-        regions = []
-        for index,entry in enumerate(seq_list):
+        self.regions = []
+        for index,entry in enumerate(self.seq_list):
             if entry["pair"] != -1 and entry["mark"] == False:
-                regions.append({"start1": entry["base"], 
+                self.regions.append({"start1": entry["base"], 
                                 "end2": entry["pair"]})
                 
-                region_index = len(regions) - 1
+                region_index = len(self.regions) - 1
                 entry["mark"] = True
                 entry["region"] = region_index
                 
                 n = entry["pair"]
                 ending = entry["pair"]
-                seq_list[n]["mark"] = True
-                seq_list[n]["region"] = region_index
+                self.seq_list[n]["mark"] = True
+                self.seq_list[n]["region"] = region_index
                 
-                for i,j in enumerate(seq_list[index::ending]):
+                for i,j in enumerate(self.seq_list[index::ending]):
                     if j["pair"] == n-1:
                         j["mark"] = True
                         j["region"] = region_index
                         
                         n = j["pair"]
-                        seq_list[n]["mark"] = True
-                        seq_list[n]["region"] = region_index
+                        self.seq_list[n]["mark"] = True
+                        self.seq_list[n]["region"] = region_index
                     else:
-                        regions[region_index]["start2"] = seq_list[i-1]["base"]
-                        seq_list[i-1]["region"] = region_index
+                        self.regions[region_index]["start2"] = self.seq_list[i-1]["base"]
+                        self.seq_list[i-1]["region"] = region_index
                         
-                        pair_loc = seq_list[i-1]["pair"]
+                        pair_loc = self.seq_list[i-1]["pair"]
                         
-                        regions[region_index]["end2"] = pair_loc
+                        self.regions[region_index]["end2"] = pair_loc
                         
-                        seq_list[pair_loc]["region"] = region_index
+                        self.seq_list[pair_loc]["region"] = region_index
                         
                         
     def loops (self, i): 
@@ -72,33 +73,33 @@ class RNA:
         while True:
             if (i == ibase):
                 break
-            if (seq_list[i]["pair"] != -1):
+            if (self.seq_list[i]["pair"] != -1):
                 region_index = bases[i].region
-                rp = regions[region_index]
+                rp = self.regions[region_index]
                 if (i == rp["start1"]):
                     seq_list[i]["extracted"] = True
                     i_end1 = rp["end1"]
                     i_start2 = rp["start2"]
                     i_end2 = rp["end2"]
-                    seq_list[i_end1]["extracted"] = True
-                    seq_list[i_start2]["extracted"] = True
-                    seq_list[i_end2]["extracted"] = True
+                    self.seq_list[i_end1]["extracted"] = True
+                    self.seq_list[i_start2]["extracted"] = True
+                    self.seq_list[i_end2]["extracted"] = True
                     if i_end1 < len(seq):
-                        lp = loops(i_end1 + 1)
+                        lp = self.loops(i_end1 + 1)
                     else:
-                        lp = loops(-1)
+                        lp = self.loops(-1)
                 elif (i == rp["start2"]):
-                    seq_list[i]["extracted"] = True
+                    self.seq_list[i]["extracted"] = True
                     i_end1 = rp["end1"]
                     i_start2 = rp["start2"]
                     i_end2 = rp["end2"]
-                    seq_list[i_end1]["extracted"] = True
-                    seq_list[i_start2]["extracted"] = True
-                    seq_list[i_end2]["extracted"] = True
-                    if i_end2 < len(seq):
-                        lp = loops(i_end2 + 1)
+                    self.seq_list[i_end1]["extracted"] = True
+                    self.seq_list[i_start2]["extracted"] = True
+                    self.seq_list[i_end2]["extracted"] = True
+                    if i_end2 < len(self.seq):
+                        lp = self.loops(i_end2 + 1)
                     else:
-                        lp = loops(-1)
+                        lp = self.loops(-1)
                 else:
                     print "base not found"
                 retloop["connections"] = cp
@@ -122,8 +123,8 @@ class RNA:
                     cp["end"] = rp["end1"]
                 cp["extruded"] = False
                 cp["broken"] = False
-            i = seq_list[i]["pair"]
-        if (++i > len(seq)):
+            i = self.seq_list[i]["pair"]
+        if (++i > len(self.seq)):
             i = -1
         return retloop
 
