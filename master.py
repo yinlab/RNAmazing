@@ -182,7 +182,6 @@ def import_fasta():
 						print "ERROR: Invalid characters in sequence"
 						sys.exit()
 					sequence += c
-
 	strand_obj = classes.Strand(material, title, sequence)
 	strands_list.append(strand_obj)	
 	multiple_permutations = classes.Permutations(strands_list)
@@ -198,33 +197,65 @@ def nussinov_algorithm(multiple_permutations):
 	# creates a list of all possible nussinov structures and score matrices
 	list_of_nussinov_structures = []
 	list_of_nussinov_matrices = []
+
+def algorithm_operator(multiple_permutations, algorithm):
+
+	# creates a list of all possible structures and score matrices
+	list_of_structures = []
+	list_of_matrices = []
+
 	for element in multiple_permutations.permutations():
 		print "Permutation: "+element.get_name()
 		print element.get_concatamer("")
-		nussinov = prediction.NussinovPredictor(element,None)
-		nussinov.predict_structure()
-		list_of_nussinov_structures.append(nussinov.to_structure())
-		list_of_nussinov_matrices.append(nussinov.to_score_matrix())
-		print (nussinov.to_structure()).get_pairs()
+		if (algorithm == "nussinov"):
+			struct = prediction.NussinovPredictor(element,None)
+		elif (algorithm == "zuker"):
+			struct = prediction.ZukerPredictor(element,None)
+		struct.predict_structure()
+		list_of_structures.append(struct.to_structure())
+		list_of_matrices.append(struct.to_score_matrix())
+		print (struct.to_structure()).get_pairs()
 
 	# determining best case scenario of the multiple permutations
 	def len_fun(x):
 		return len(x.get_pairs())
-	list_of_nussinov_scores = map(len_fun, list_of_nussinov_structures)
-	index_of_best = list_of_nussinov_scores.index(max(list_of_nussinov_scores))
-	best_nussinov = list_of_nussinov_structures.pop(index_of_best)
+	list_of_scores = map(len_fun, list_of_structures)
+	index_of_best = list_of_scores.index(max(list_of_scores))
+	best_struct = list_of_structures.pop(index_of_best)
 
-	best_nussinov_score_matrix = list_of_nussinov_matrices[index_of_best]
+	best_score_matrix = list_of_matrices[index_of_best]
 
 	# generates variables to represent the secondary structure and sequence of output
-	sstr = best_nussinov.get_pairs()
-	seq = best_nussinov.get_sequence()
+	sstr = best_struct.get_pairs()
+	seq = best_struct.get_sequence()
 
 	print "Best structure..."
 	print "Pair list: "
 	print sstr
 	print "Sequence: " + seq
+	
+	return (sstr, seq)
 
+
+# visualization function
+def visualization_fun(sstr, seq, visualization_type):
+	vis = visualization.Visualize()
+	if visualization_type == "DOTPAREN":
+		print "In dot-paren notation: " 
+		print vis.viz_bracket(sstr, seq)
+	elif visualization_type == "CIRCLE":
+		vis.viz_circle(sstr, seq)
+	elif visualization_type == "ARC":
+		vis.viz_arc(sstr, seq)
+	elif visualization_type == "MOUNTAIN":
+		vis.viz_mountain(sstr, seq)
+
+
+def nussinov_algorithm(multiple_permutations):
+
+	# finds result of nussinov algorithm
+	(sstr, seq) = algorithm_operator(multiple_permutations, "nussinov")
+	
 	# pass output to visualization module
 	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
 
@@ -297,49 +328,10 @@ def nussinov_algorithm(multiple_permutations):
 
 def zuker_algorithm(multiple_permutations):
 
-	# creates a list of all possible nussinov structures and score matrices
-	list_of_zuker_structures = []
-	list_of_zuker_matrices = []
-	for element in multiple_permutations.permutations():
-		zuker = prediction.ZukerPredictor(element,None)
-		zuker.generate_score_matrix()
-		zuker.traceback()
-		list_of_zuker_structures.append(zuker.to_structure())
-		list_of_zuker_matrices.append(zuker.to_score_matrix())
-	
-	def len_fun(x):
-		return len(x.get_pairs())
-	
-	list_of_zuker_scores = map(len_fun, list_of_zuker_structures)
-	index_of_best = list_of_zuker_scores.index(max(list_of_zuker_scores))
-	best_zuker = list_of_zuker_structures.pop(index_of_best)
-	best_zuker_score_matrix = list_of_zuker_matrices[index_of_best]
-
-	# generates variables to represent the secondary structure and sequence of output
-	sstr = best_zuker.get_pairs()
-	seq = best_zuker.get_sequence()
-
-	print "Best structure..."
-	print "Pair list: "
-	print sstr
-	print "Sequence: " + seq
+	(sstr, seq) = algorithm_operator(multiple_permutations, "zuker")
 
 	# pass output to visualization module
-	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
-
-
-# visualization function
-def visualization_fun(sstr, seq, visualization_type):
-	vis = visualization.Visualize()
-	if visualization_type == "DOTPAREN":
-		print "In dot-paren notation: " 
-		print vis.viz_bracket(sstr, seq)
-	elif visualization_type == "CIRCLE":
-		vis.viz_circle(sstr, seq)
-	elif visualization_type == "ARC":
-		vis.viz_arc(sstr, seq)
-	elif visualization_type == "MOUNTAIN":
-		vis.viz_mountain(sstr, seq)
+	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )
 
 
 #./master.py filename.txt visualization algorithm
