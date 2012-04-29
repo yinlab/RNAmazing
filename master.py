@@ -144,10 +144,12 @@ def import_default():
 		# Permutations object
 		strand_obj = classes.Strand(material, strand_name, sequence)
 		strands_list.append(strand_obj)	
+		
 	multiple_permutations = classes.Permutations(strands_list)
 	file.close()
 	return multiple_permutations
 
+# import function for fasta input method, returning a Permutations object
 def import_fasta():
 	try: 
 		file = open(sys.argv[1])
@@ -193,6 +195,8 @@ def import_fasta():
 	file.close()
 	return multiple_permutations					
 
+
+# function to find best structure of a list of structures
 def find_best(structures):
 	def len_fun(x):
 		return len(x.get_pairs())
@@ -204,23 +208,25 @@ def find_best(structures):
 	sstr = best_struct.get_pairs()
 	seq = best_struct.get_sequence()
 
-	print "Best structure..."
+	print "\nThe best result had the following characteristics..."
 	print "Pair list: "
 	print sstr
 	print "Sequence: " + seq
 	
-	return (sstr, seq)
+	return (sstr, seq, index_of_best)
 
 
+# function for carrying out algorithm on a Permutations object
 def algorithm_operator(multiple_permutations, algorithm):
-
 	# creates a list of all possible structures and score matrices
 	list_of_structures = []
 	list_of_matrices = []
 
+	print "\nCalculating all possible permutations..."
 	# performs algorithms on all possible permutations
 	for element in multiple_permutations.permutations():
-		print "Permutation: "+element.get_name()
+		print "\nPermutation: "+element.get_name()
+		print "Sequence:  "
 		print element.get_concatamer("")
 		if (algorithm == "nussinov"):
 			struct = prediction.NussinovPredictor(element,None)
@@ -229,31 +235,102 @@ def algorithm_operator(multiple_permutations, algorithm):
 		struct.predict_structure()
 		list_of_structures.append(struct.to_structure())
 		list_of_matrices.append(struct.to_score_matrix())
+		print "Base pair interactions:  "
 		print (struct.to_structure()).get_pairs()
 	
-	(seq,sstr) = find_best(list_of_structures)
+	(sstr,seq,index) = find_best(list_of_structures)
+	return (sstr, seq, list_of_matrices)
+
+
+# nussinov algorithm with real-time recalculation set-up
+def nussinov_algorithm(multiple_permutations):
+	# finds result of nussinov algorithm using algorithm operator function
+	(sstr, seq, matrices) = algorithm_operator(multiple_permutations, "nussinov")
 	
-	return (seq, sstr, list_of_matrices)
+	# pass output to visualization module
+	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
 	
-	# determining best case scenario of the multiple permutations
-#	def len_fun(x):
-#		return len(x.get_pairs())
-#	list_of_scores = map(len_fun, list_of_structures)
-#	index_of_best = list_of_scores.index(max(list_of_scores))
-#	best_struct = list_of_structures.pop(index_of_best)
-#	best_score_matrix = list_of_matrices[index_of_best]
+	nussinov_realtime_input(matrices, multiple_permutations)
 
-	# generates variables to represent the secondary structure and sequence of output
-#	sstr = best_struct.get_pairs()
-#	seq = best_struct.get_sequence()
 
-#	print "Best structure..."
-#	print "Pair list: "
-#	print sstr
-#	print "Sequence: " + seq	
-#	return (sstr, seq, list_of_matrices)
+# gets input for realtime recalculation
+def nussinov_realtime_input(matrices, multiple_permutations):
+	# real-time recalculation set-up for nussinov
+	while True:
+		# gets user input for any updates
+		option = "q"
+		input_valid = False
+		while (input_valid == False):
+			while (option != "y") & (option != "n"):
+				option = raw_input("Would you like to make an update to your structure? [y/n]: ")
+			else:
+				if option == "y":
+					strand_name = raw_input("Which strand would you like to update?  ")
+					strand_index = (raw_input("Which zero-indexed base on this strand would you like to modify?  "))
+					new_base = raw_input("What base would you like to modify this to?  " )				
+				elif option == "n":
+					sys.exit()
+			
+			try:
+				strand_index = int(strand_index)
+				new_struct = prediction.Recalculation(matrices[0], (multiple_permutations.permutations())[0], strand_name, strand_index, new_base)
+				input_valid = True
+			except ValueError:
+				print "ERROR:  Index must be an integer value"
+			except classes.StrandNameError:
+				print "ERROR:  There is no strand with this name"
+			except classes.BaseIndexError:
+				print "ERROR:  Improper Index" 
+			except classes.DNABaseError:
+				print "ERROR:  DNA sequences can only consist of A, T, C, & G"
+			except classes.RNABaseError:
+				print "ERROR:  RNA sequences can only consist of A, U, C, & G"
 
-# visualization function
+		
+		best_matrix = nussinov_realtime_execution(matrices, multiple_permutations, strand_name, strand_index, new_base)
+		
+		
+def nussinov_realtime_execution(matrices, multiple_permutations, strand_name, strand_index, new_base):
+		print "\n\nRecalculating relevant permutations..."
+
+		# re-initializes empty lists
+		list_of_nussinov_structures = []
+		list_of_nussinov_matrices = []
+		
+		for i in range (0, len(multiple_permutations.permutations())):
+			new_struct = prediction.Recalculation(matrices[i], (multiple_permutations.permutations())[i], strand_name, strand_index, new_base)
+			new_struct.predict_structure()
+			list_of_nussinov_structures.append(new_struct.to_structure())
+			list_of_nussinov_matrices.append(new_struct.to_score_matrix())
+			print "Permutation: "+ ((multiple_permutations.permutations())[i]).get_name()
+			print "Sequence:  "
+			print ((multiple_permutations.permutations())[i]).get_concatamer("")
+			print "Base pair interactions: "
+			print (new_struct.to_structure()).get_pairs()
+
+		# finds best structure
+		(sstr, seq, index) = find_best(list_of_nussinov_structures)
+
+		# reupdates matrices definition
+		matrices = list_of_nussinov_matrices
+
+		# returns matrix of best for testing purposes
+		matrix_of_best = matrices[index]
+		
+		# pass output to visualization module
+		visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
+
+		return matrix_of_best		
+
+def zuker_algorithm(multiple_permutations):
+	# performs algorithm operation
+	(sstr, seq, matrices) = algorithm_operator(multiple_permutations, "zuker")
+	
+	# pass output to visualization module
+	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )
+
+
+# visualization integration
 def visualization_fun(sstr, seq, visualization_type):
 	vis = visualization.Visualize()
 	if visualization_type == "DOTPAREN":
@@ -266,86 +343,16 @@ def visualization_fun(sstr, seq, visualization_type):
 	elif visualization_type == "MOUNTAIN":
 		vis.viz_mountain(sstr, seq)
 
-def nussinov_algorithm(multiple_permutations):
-
-	# finds result of nussinov algorithm
-	(sstr, seq, matrices) = algorithm_operator(multiple_permutations, "nussinov")
-	
-	# pass output to visualization module
-	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
-
-	# real-time recalculation set-up
-	while True:
-		# gets user input for any updates
-		option = "q"
-		input_valid = False
-		while (input_valid == False):
-			while (option != "y") & (option != "n"):
-				option = raw_input("Would you like to make an update to your structure? [y/n]: ")
-			else:
-				if option == "y":
-					strand_name = raw_input("Which strand would you like to update?  ")
-					strand_index = (raw_input("Which zero-indexed base on this strand would you like to modify?  "))
-					new_base = raw_input("What base would you like to modify " + strand_name + "[" + strand_index + "] to?  " )
-					strand_index = int(strand_index)
-				elif option == "n":
-					sys.exit()
-			
-			try:
-				new_struct = prediction.Recalculation(matrices[0], (multiple_permutations.permutations())[0], strand_name, strand_index, new_base)
-				input_valid = True
-			except classes.StrandNameError:
-				print "ERROR:  There is no strand with this name"
-			except classes.BaseIndexError:
-				print "ERROR:  Improper Index" 
-			except classes.DNABaseError:
-				print "ERROR:  DNA sequences can only consist of A, T, C, & G"
-			except classes.RNABaseError:
-				print "ERROR:  RNA sequences can only consist of A, U, C, & G"
-
-		# re-initializes empty lists
-		list_of_nussinov_structures = []
-		list_of_nussinov_matrices = []
-
-		for i in range (0, len(multiple_permutations.permutations())):
-			new_struct = prediction.Recalculation(matrices[i], (multiple_permutations.permutations())[i], strand_name, strand_index, new_base)
-			new_struct.predict_structure()
-			list_of_nussinov_structures.append(new_struct.to_structure())
-			list_of_nussinov_matrices.append(new_struct.to_score_matrix())
-			print "Permutation: "+ ((multiple_permutations.permutations())[i]).get_name()
-			print ((multiple_permutations.permutations())[i]).get_concatamer("")
-			print (new_struct.to_structure()).get_pairs()
-			print len((new_struct.to_structure()).get_pairs())
-
-		# finds best structure
-		(sstr, seq) = find_best(list_of_nussinov_structures)
-
-		# reupdates matrices definition
-		matrices = list_of_nussinov_matrices
-
-		# pass output to visualization module
-		visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
-		
-
-
-
-
-def zuker_algorithm(multiple_permutations):
-
-	# performs algorithm operation
-	(sstr, seq, matrices) = algorithm_operator(multiple_permutations, "zuker")
-
-	# pass output to visualization module
-	visualization_fun(sstr,seq, string.upper(sys.argv[2]) )
-
 
 #./master.py filename.txt visualization algorithm input
 def main():
 	cmdline_validation()
+	print "\n\nLoading strands from file..."
 	if (string.upper(sys.argv[3]) == "NUSSINOV"):
 		nussinov_algorithm(	import_from_file() )
 	elif (string.upper(sys.argv[3]) == "ZUKER"):
 		zuker_algorithm( import_from_file() )
+
 	
 if __name__ == '__main__':
 	main()
