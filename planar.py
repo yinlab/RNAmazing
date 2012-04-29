@@ -1,11 +1,10 @@
-
 # Initialize modules
 import math
 from Tkinter import * 
 
 # Create Tk instance
 master = Tk()
-master.title("Arc Diagram")
+master.title("RNA Planar Graph")
 master.resizable(width=0, height=0)
 
 # Create canvas
@@ -140,3 +139,76 @@ class RNA:
         Output to canvas
         """
         pass
+		
+
+# Begin another attempt
+def planar2:
+	# Fake input
+	seq = "CGCGGGGUAGAGCAGCCUGGUAGCUCGUCGGGCUCAUA"
+	sstr = [(1, 20), (2, 19), (4, 17), (5, 16), (6, 15), (7, 14), (22, 32), (23, 31), (24, 30)]
+
+	# Initialize modules
+	import math
+	from Tkinter import * 
+
+	# Create Tk instance
+	master = Tk()
+	master.title("RNA Planar Graph")
+	master.resizable(width=0, height=0)
+
+	# Create canvas
+	canvasw = 800
+	canvash = 800
+	w = Canvas(master, width = canvasw, height = canvash)
+	w.pack()
+
+	# Construct initial list of bases and pairs
+	bases = []
+	for base in seq:
+		bases.append({"base": base, "mate": -1})
+	for b1, b2 in sstr:
+		bases[b1]["mate"] = b2
+		bases[b2]["mate"] = b1
+
+	# Starting coordinates
+	xstart = canvasw / 2
+	ystart = 50
+	locations = {}
+
+	# Loop through rest of sequence
+	i, j = 0, len(seq) - 1
+	xcount = 0
+	ycount = 0
+	while (i < j):
+		if bases[i]["mate"] == j:
+			locations[i] = xstart - 20, ystart + ycount * 20
+			locations[j] = xstart + 20, ystart + ycount * 20
+			currentpair = i, j
+			i += 1
+			j -= 1
+		else:
+			# Find next base pair
+			nextpair = None
+			max_diff = 0
+			for b1, b2 in sstr:
+				if (b2 - b1) > max_diff:
+					max_diff = b2 - b1
+					nextpair = (b1, b2)
+			if nextpair:
+				sstr.pop(sstr.index(nextpair))
+				k, l = nextpair
+				ycount += ((k - i) + (j - l)) / 2
+				locations[k] = xstart - 20, ystart + ycount * 20
+				locations[l] = xstart + 20, ystart + ycount * 20
+				i, j = k, l
+			else: 
+				i += 1
+			
+	print locations
+
+	# Draw
+	colors = {'G': "green", 'C': "blue", 'A': "yellow", 'U': "red", 'T': "red"}	
+	for key, (x, y) in locations.iteritems():
+		w.create_text(x, y, text = seq[key], fill = colors[seq[key]])
+		
+	mainloop()
