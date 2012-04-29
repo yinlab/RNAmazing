@@ -1,3 +1,7 @@
+import math
+import canvasvg
+from Tkinter import *
+
 class Visualize:
 	"""
 	Takes structure and outputs it as visualization
@@ -23,10 +27,6 @@ class Visualize:
 		"""
 		Returns svg of arc secondary structure graph
 		"""
-		import math
-		import canvasvg
-		from Tkinter import * 
-
 		# Create Tk instance
 		master = Tk()
 		master.title("Arc Diagram")
@@ -72,10 +72,6 @@ class Visualize:
 		"""
 		Returns svg of chord secondary structure graph
 		"""
-		import math
-		import canvasvg
-		from Tkinter import *
-
 		# Create a Tk instance
 		master = Tk()
 		master.title("Chord Diagram")
@@ -128,10 +124,6 @@ class Visualize:
 		"""
 		Returns svg of secondary structure mountain plot
 		"""
-		import math
-		import canvasvg
-		from Tkinter import *
-
 		# Create a Tk instance
 		master = Tk()
 		master.title("Mountain Plot")
