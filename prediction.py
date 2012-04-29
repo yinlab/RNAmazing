@@ -394,11 +394,6 @@ class ZukerPredictor(AbstractSingleStrandPredictor):
 					self.score_matrix_v.set(i, j, float("inf")) 		
 		
 		# Do the main thing
-#		for i in range(1, l):
-#			for j in range(i, l):
-#				self.score_matrix.set(i, j, W(i, j))
-#				self.score_matrix_v.set(i, j, V(i, j))
-
 		for n in range(1, l):
 			for j in range(n, l):
 				#i = j - n + 1
