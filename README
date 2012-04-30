@@ -1,22 +1,24 @@
-CS51 Final Project:  RNAmazing:
+CS51 Final Project: RNAmazing!
 
 
-Running from the command line:
+Running from the command line, execute:
 
-execute:
 	python master.py [.txt file] [visualization type] [prediction algorithm] [input format]
 	
-where:
-	-	the .txt file has DNA/RNA strands in the format {strand_name;material;sequence}
-	-	if the .txt file contains more than one sequence each sequence should be separated by a hard return
-	-	material can be either RNA or DNA
-	-	sequences of DNA can only consist of A, T, C, and G
-	-	sequence of RNA can only consist of A, U, C, and G
-	-	the visualization type can either be circle, arc, mountain, or dot paren
-	- 	the prediction algorithm can either be Zuker or Nussinov
-	- 	input format can either be default or FASTA
-	-	the case of text doesn't matter (i.e.  DNA == dna)
+	-	The .txt file has DNA/RNA strands in one of the following formats (default, FASTA, or NUPACK)
+		-	{strand_name;material;sequence}
+		-	>name
+			sequence
+		-	name: sequence
+	-	If the .txt file contains more than one sequence each sequence should be separated by a hard return
+	-	Material can be either RNA or DNA
+	-	Sequences of DNA can only consist of A, T, C, and G
+	-	Sequence of RNA can only consist of A, U, C, and G
+	-	The visualization type can either be circle, arc, mountain, or dot paren
+	- 	The prediction algorithm can either be Zuker or Nussinov
+	- 	Input format can either be default, NUPACK, or FASTA
+	-	The case of text doesn't matter (i.e.  DNA == dna)
 
-** see example.txt for the format of the .txt file
+** See example .txt documents for the format of the .txt file
 
 
