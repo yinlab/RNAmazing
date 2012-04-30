@@ -20,18 +20,16 @@ class Strand:
 		return self
 
 class Permutations:
-	""" can be implemented as another dict or set """
-	# so there is some redundancy in this, but it will have to do for now
+	""" Creates a permutations object """
 	def __init__(self, lis):
 		self.permutation_list = itertools.permutations(lis)
 		self.actual_permutation_list = []
 		for element in self.permutation_list:
 			self.actual_permutation_list.append(classes.Permutation(list(element)))
-		pass
 	
 	def permutations (self):
 		"""
-		return all permutations
+		Return all permutations
 		"""
 		return self.actual_permutation_list
 
@@ -43,8 +41,6 @@ class ScoreMatrix:
 		Initializes triangular matrix with height i and width j, with zeroes 
 		across the main diagonal
 		"""
-		# a little too clever I think
-		# self.matrix = [[None] * i] * j
 		self.matrix = [[None for n in range(i)] for m in range(j)]
 		self.width = i
 		self.height = j
@@ -193,46 +189,7 @@ class Structure:
 	def get_pairs(self):
 		"""Returns the structure as a list of (int,int) tuples"""
 		return self.pairs	
-	
-	# what is this?
-	def __iter__(self):
-		for pair in self.pairs:
-			yield pair
-		pass
-	
-class State:
-	"""
-	Represents a state of the predictor which can be more quickly mutated by single-base
-	substitution (and insertion and deletion)
-	"""
-	
-	def __init__(self, pairs):
-		"""Initialized the state from a list of (Permutation,ScoreMatrix) tuples"""
-		pass
-		
-	def add(self, permutation, score_matrix):
-		"""Adds an additional ScoreMatrix for a given permutation"""
-		pass
-	
-	def remove(self, permutation):
-		"""Removes the given permutation from the ensemble"""
-		pass
-		
-	def get_permutations(self):
-		"""Returns the permutations in the state"""
-		pass
-		
-	def get_score_matrix(self, permutation):
-		"""Returns the score matrix corresponding to a particular permutation"""
-		pass
-		
-	def set_score_matrix(self, permutation):
-		"""Updates the score matrix corresponding to a particular permutation"""
-		pass
-	
-	def get_as_tuples(self):
-		"""Returns list of (Permutation, ScoreMatrix) tuples, as passed to the initiator"""
-		pass
+
 
 class StrandNameError(exceptions.Exception):
 	def __init__(self):

@@ -18,115 +18,131 @@ class RNA:
         """
         Construct initial base + pair list
         """
-        seq_list = []
+        self.seq_list = []
+        self.seq = seq
+        self.loop = []
         for i in seq:
-            seq_list.append({"base": i, "pair": -1, "mark": False})
-            for b1, b2 in sstr:
-                seq_list[b1]["pair"] = b2
-                
-    def regions (self):
+            self.seq_list.append({"base": i, "pair": -1, "mark": False})
+        for b1, b2 in sstr:
+            self.seq_list[b1]["pair"] = b2
+            self.seq_list[b2]["pair"] = b1
+
+    def region (self):
         """
         Define stem regions
         """
-        regions = []
-        for index,entry in enumerate(seq_list):
+        self.regions = []
+        
+        print self.seq_list
+
+        for index,entry in enumerate(self.seq_list):
             if entry["pair"] != -1 and entry["mark"] == False:
-                regions.append({"start1": entry["base"], 
+                self.regions.append({"start1": index, 
                                 "end2": entry["pair"]})
                 
-                region_index = len(regions) - 1
+                region_index = len(self.regions) - 1
                 entry["mark"] = True
                 entry["region"] = region_index
                 
                 n = entry["pair"]
                 ending = entry["pair"]
-                seq_list[n]["mark"] = True
-                seq_list[n]["region"] = region_index
+                self.seq_list[n]["mark"] = True
+                self.seq_list[n]["region"] = region_index
                 
-                for i,j in enumerate(seq_list[index::ending]):
-                    if j["pair"] == n-1:
+                for i,j in enumerate(self.seq_list):
+                    print j["pair"]
+                    print n-1
+                    print ""
+                    if i <= index:
+                        continue
+                    elif i >= ending:
+                        break
+                    elif j["pair"] == n-1:
+
                         j["mark"] = True
                         j["region"] = region_index
                         
+                        
                         n = j["pair"]
-                        seq_list[n]["mark"] = True
-                        seq_list[n]["region"] = region_index
+                        self.seq_list[n]["mark"] = True
+                        self.seq_list[n]["region"] = region_index
                     else:
-                        regions[region_index]["start2"] = seq_list[i-1]["base"]
-                        seq_list[i-1]["region"] = region_index
+                        self.regions[region_index]["start2"] = i-1
+                        self.seq_list[i-1]["region"] = region_index
                         
-                        pair_loc = seq_list[i-1]["pair"]
+                        pair_loc = self.seq_list[i]["pair"]
                         
-                        regions[region_index]["end2"] = pair_loc
-                        
-                        seq_list[pair_loc]["region"] = region_index
-                        
-                        
+                        self.regions[region_index]["end1"] = pair_loc
+                        self.seq_list[pair_loc]["region"] = region_index
+        
     def loops (self, i): 
         """
         Define loop regions
         """
-        lp = []
-        cp = []
+        lp = {}
+        self.cp = {}
+        retloop = []
 
         while True:
-            if (i == ibase):
+            if (i == -1):
                 break
-            if (seq_list[i]["pair"] != -1):
-                region_index = bases[i].region
-                rp = regions[region_index]
+            if (self.seq_list[i]["pair"] != -1):
+                
+                region_index = self.seq_list[i]["region"]
+                rp = self.regions[region_index]
+                print rp["start1"]
+                print rp["start2"]
                 if (i == rp["start1"]):
                     seq_list[i]["extracted"] = True
                     i_end1 = rp["end1"]
                     i_start2 = rp["start2"]
                     i_end2 = rp["end2"]
-                    seq_list[i_end1]["extracted"] = True
-                    seq_list[i_start2]["extracted"] = True
-                    seq_list[i_end2]["extracted"] = True
+                    self.seq_list[i_end1]["extracted"] = True
+                    self.seq_list[i_start2]["extracted"] = True
+                    self.seq_list[i_end2]["extracted"] = True
                     if i_end1 < len(seq):
-                        lp = loops(i_end1 + 1)
+                        lp = self.loops(i_end1 + 1)
                     else:
-                        lp = loops(-1)
+                        lp = self.loops(-1)
                 elif (i == rp["start2"]):
-                    seq_list[i]["extracted"] = True
+                    self.seq_list[i]["extracted"] = True
                     i_end1 = rp["end1"]
                     i_start2 = rp["start2"]
                     i_end2 = rp["end2"]
-                    seq_list[i_end1]["extracted"] = True
-                    seq_list[i_start2]["extracted"] = True
-                    seq_list[i_end2]["extracted"] = True
-                    if i_end2 < len(seq):
-                        lp = loops(i_end2 + 1)
+                    self.seq_list[i_end1]["extracted"] = True
+                    self.seq_list[i_start2]["extracted"] = True
+                    self.seq_list[i_end2]["extracted"] = True
+                    if i_end2 < len(self.seq):
+                        lp = self.loops(i_end2 + 1)
                     else:
-                        lp = loops(-1)
+                        lp = self.loops(-1)
                 else:
                     print "base not found"
-                retloop["connections"] = cp
-                cp["loop"] = lp 
-                cp["region"] = region_index
+                self.loop.append(lp)
+                lp_index = len(self.loop) - 1
+                self.cp["loop"] = lp_index
+                self.cp["region"] = region_index
                 if (i == rp["start1"]):
-                    cp["start"] = rp["start1"]
-                    cp["end"] = rp["end2"]
+                    self.cp["start"] = rp["start1"]
+                    self.cp["end"] = rp["end2"]
                 else:
-                    cp["start"] = rp["start2"]
-                    cp["end"] = rp["end1"]
-                cp["extruded"] = False
-                cp["broken"] = False
-                cp["loop"] = retloop
-                cp["region"] = rp
+                    self.cp["start"] = rp["start2"]
+                    self.cp["end"] = rp["end1"]
+                self.cp["extruded"] = False
+                self.cp["broken"] = False
+                self.cp["region"] = rp
                 if (i == rp["start1"]):
-                    cp["start"] = rp["start1"]
-                    cp["end"] = rp["end2"]
+                    self.cp["start"] = rp["start1"]
+                    self.cp["end"] = rp["end2"]
                 else:
-                    cp["start"] = rp["start2"]
-                    cp["end"] = rp["end1"]
-                cp["extruded"] = False
-                cp["broken"] = False
-            i = seq_list[i]["pair"]
-        if (++i > len(seq)):
+                    self.cp["start"] = rp["start2"]
+                    self.cp["end"] = rp["end1"]
+                self.cp["extruded"] = False
+                self.cp["broken"] = False
+            i = self.seq_list[i]["pair"]
+        if (++i > len(self.seq)):
             i = -1
-        return retloop
-
+        return self.cp
 
     def plot (self):
         """
