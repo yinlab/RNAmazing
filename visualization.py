@@ -65,8 +65,7 @@ class Visualize:
 
 
 		# Output to file
-		#canvasvg.saveall("arc.svg", w)	
-		mainloop()
+		canvasvg.saveall("arc.svg", w)	
 
 	def viz_circle(self, sstr, seq):
 		"""
@@ -117,8 +116,7 @@ class Visualize:
 				      coords[base2]["x"], coords[base2]["y"], fill = "red")
 
 		# Output to file
-		#canvasvg.saveall("circle.svg", w)
-		mainloop()
+		canvasvg.saveall("circle.svg", w)
 	
 	def viz_mountain(self, sstr, seq):
 		"""
@@ -190,5 +188,5 @@ class Visualize:
 		for index, point in enumerate(points[1:]):
 			w.create_line(point["x"], point["y"], points[index]["x"], points[index]["y"], fill = "black")
 
-		#canvasvg.saveall("mountainplot.svg", w)
-		mainloop()
+		# Output to svg
+		canvasvg.saveall("mountainplot.svg", w)

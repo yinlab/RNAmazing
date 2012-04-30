@@ -31,8 +31,8 @@ def cmdline_validation():
 		if (fourth_arg != "NUSSINOV") & (fourth_arg != "ZUKER"):
 			print "Usage: possible algorithm types include NUSSINOV ZUKER"
 			sys.exit()
-		if (fifth_arg != "DEFAULT") & (fifth_arg != "FASTA"):
-			print "Usage: possible input types include DEFAULT FASTA"
+		if (fifth_arg != "DEFAULT") & (fifth_arg != "FASTA") & (fifth_arg != "NUPACK"):
+			print "Usage: possible input types include DEFAULT FASTA NUPACK"
 			sys.exit()
 		if not(fnmatch.fnmatch(file, '*.txt')):
 			print "File should be of type '.txt'"
@@ -41,8 +41,10 @@ def cmdline_validation():
 def import_from_file():
 	if string.upper(sys.argv[4]) == "DEFAULT":
 		return import_default()
-	else:
+	elif string.upper(sys.argv[4]) == "FASTA":
 		return import_fasta()
+	else:
+		return import_nupack()
 			
 # checks validity of input file format, and returns a Permutations object
 def import_default():
@@ -193,6 +195,47 @@ def import_fasta():
 	file.close()
 	return multiple_permutations					
 
+def import_nupack():
+	try:
+		file = open(sys.argv[1])
+	except IOError:
+		print "File could not be opened."
+		sys.exit()
+		
+	strands_list = []
+	title = ""
+	strand = ""
+	sequence = ""
+	material = None
+	
+	for line in file:
+		line = line.upper()
+		line = line.replace(" ", "")
+		line = line.strip("\n")
+		title, part, strand = line.partition(":")
+		if strand == "":
+			print "ERROR: Input must be of type NAME:SEQUENCE"
+			sys.exit()
+		print "\nStrand name: " + title
+		for c in strand: 
+			if material == None:
+				if c == "T":
+					material = "DNA"
+					print "Material: " + material
+				elif c == "U":
+					material = "RNA"
+					print "Material: " + material
+			if (c != 'A') & (c != 'T') & (c != 'U') & (c != 'C') & (c != 'G'):
+				print "ERROR: Invalid characters in sequence"
+				sys.exit()
+			sequence += c
+		print "\nSequence: " + sequence
+		strand_obj = classes.Strand(material, title, sequence)
+		strands_list.append(strand_obj)	
+	multiple_permutations = classes.Permutations(strands_list)
+	file.close()
+	return multiple_permutations
+	
 def find_best(structures):
 	def len_fun(x):
 		return len(x.get_pairs())
