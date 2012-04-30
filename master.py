@@ -286,10 +286,12 @@ def nussinov_realtime_input(matrices, multiple_permutations):
 			except classes.RNABaseError:
 				print "ERROR:  RNA sequences can only consist of A, U, C, & G"
 
+		(sstr,seq,matrix_of_best) = nussinov_realtime_execution(matrices, multiple_permutations, strand_name, strand_index, new_base)
 		
-		best_matrix = nussinov_realtime_execution(matrices, multiple_permutations, strand_name, strand_index, new_base)
-		
-		
+		# pass output to visualization module
+		visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
+
+# executes realtime, factored for testing purposes		
 def nussinov_realtime_execution(matrices, multiple_permutations, strand_name, strand_index, new_base):
 		print "\n\nRecalculating relevant permutations..."
 
@@ -317,10 +319,8 @@ def nussinov_realtime_execution(matrices, multiple_permutations, strand_name, st
 		# returns matrix of best for testing purposes
 		matrix_of_best = matrices[index]
 		
-		# pass output to visualization module
-		visualization_fun(sstr,seq, string.upper(sys.argv[2]) )	
+		return (sstr,seq,matrix_of_best)
 
-		return matrix_of_best		
 
 def zuker_algorithm(multiple_permutations):
 	# performs algorithm operation

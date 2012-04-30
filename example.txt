@@ -1,1 +1,1 @@
-{strand1;dna;aatt}
+{strand1;dna;aaaa	t}

@@ -3,6 +3,7 @@ from prediction import *
 from visualization import Visualize
 import sys, csv
 import master
+import timeit
 
 
 # Tests of Nussinov Algorithm:
@@ -74,14 +75,31 @@ assert(length_test == 4)
 
 # tests changing one base to see if generates the same score matrix as the case without using
 # real-time recalculation
-original_perm = Permutations([Strand("DNA","Strand 1","AAAAAA")])
-(sstr, seq, list_of_matrices) = master.algorithm_operator(perm, "nussinov")
-score_matrix_one = 
+original_perm = Permutations([Strand("DNA","STRAND1","AAAAAA")])
+(sstr, seq, list_of_matrices) = master.algorithm_operator(original_perm, "nussinov")
+(sstr, seq, matrix_with_recal) = master.nussinov_realtime_execution(list_of_matrices, original_perm, "STRAND1", 0, 'T')
+
+secondary_perm = Permutations([Strand("DNA","Strand1","TAAAAA")])
+(sstr, seq, list_of_matrices_2) = master.algorithm_operator(secondary_perm, "nussinov")
+matrix_without_recal = list_of_matrices_2[0]
+
+assert (matrix_with_recal.matrix == matrix_without_recal.matrix)
+
+# and a more complex example of this..
+original_perm = Permutations([Strand("DNA","STRAND1","CATACTAGCA")])
+(sstr, seq, list_of_matrices) = master.algorithm_operator(original_perm, "nussinov")
+(sstr, seq, matrix_with_recal) = master.nussinov_realtime_execution(list_of_matrices, original_perm, "STRAND1", 2, 'A')
+
+secondary_perm = Permutations([Strand("DNA","Strand1","CAAACTAGCA")])
+(sstr, seq, list_of_matrices_2) = master.algorithm_operator(secondary_perm, "nussinov")
+matrix_without_recal = list_of_matrices_2[0]
+
+assert (matrix_with_recal.matrix == matrix_without_recal.matrix)
 
 
 # Tests of Zuker Algorithm:
 
-# tests that in the case of a strand of one nucleotide, no base pairs are formed
+# tests that in the case of strand of one nucleotide, no base pairs are formed
 perm = Permutations([Strand("DNA","Strand 1","A")])
 (sstr, seq, list_of_matrices) = master.algorithm_operator(perm, "zuker")
 assert(sstr == [])
@@ -94,6 +112,35 @@ perm = Permutations([Strand("DNA","Strand 1","AATT")])
 (sstr, seq, list_of_matrices) = master.algorithm_operator(perm, "zuker")
 length_test = len( sstr )
 assert(length_test == 0)
+
+# tests the case where minimum size of loop is achieved with three bases and one pair is formed
+perm = Permutations([Strand("DNA","Strand 1","AAAAT")])
+(sstr, seq, list_of_matrices) = master.algorithm_operator(perm, "zuker")
+length_test = len( sstr )
+assert(length_test == 1)
+
+
+# testing speed of realtime recalc
+
+original_perm = Permutations([Strand("DNA","STRAND1","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")])
+(sstr, seq, list_of_matrices) = master.algorithm_operator(original_perm, "nussinov")
+
+def with_recal():
+	(sstr, seq, matrix_with_recal) = master.nussinov_realtime_execution(list_of_matrices, original_perm, "STRAND1", 3, 'T')
+
+def without_recal():
+	secondary_perm = Permutations([Strand("DNA","Strand1","AAATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")])
+	(sstr, seq, list_of_matrices_2) = master.algorithm_operator(secondary_perm, "nussinov")
+	matrix_without_recal = list_of_matrices_2[0]
+
+
+time_with_recalc = timeit.Timer(setup='from __main__ import with_recal', stmt='with_recal()').timeit(200)
+time_without_recalc = timeit.Timer(setup='from __main__ import without_recal', stmt='without_recal()').timeit(200)
+
+print "with recalc..."
+print time_with_recalc
+print "without recalc..."
+print time_without_recalc
 
 
 #print perm.get_concatamer()
