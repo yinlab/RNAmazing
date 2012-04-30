@@ -118,6 +118,34 @@ perm = Permutations([Strand("DNA","Strand 1","AAAAT")])
 (sstr, seq, list_of_matrices) = master.algorithm_operator(perm, "zuker")
 length_test = len( sstr )
 assert(length_test == 1)
+assert(sstr == [(0,4)])
+
+perm = Permutations([Strand("DNA","Strand 1","CAAAG")])
+(sstr, seq, list_of_matrices) = master.algorithm_operator(perm, "zuker")
+length_test = len( sstr )
+assert(length_test == 1)
+assert(sstr == [(0,4)])
+
+perm = Permutations([Strand("DNA","Strand 1","GAAAT")])
+(sstr, seq, list_of_matrices) = master.algorithm_operator(perm, "zuker")
+length_test = len( sstr )
+assert(length_test == 1)
+assert(sstr == [(0,4)])
+
+# tests that G/C base pairs are stronger than A/T base pairs
+perm = Permutations([Strand("DNA","Strand 1","AAAGGGTTTCCC")])
+(sstr, seq, list_of_matrices) = master.algorithm_operator(perm, "zuker")
+length_test = len( sstr )
+assert(length_test == 3)
+assert(sstr == [(3, 11), (4, 10), (5, 9)])
+
+# tests that for larger systems, Zuker gives expected results from calculations
+perm = Permutations([Strand("DNA","Strand 1","AAATCCCGTCCCAGGTT")])
+(sstr, seq, list_of_matrices) = master.algorithm_operator(perm, "zuker")
+inf = float("inf")
+assert(list_of_matrices[0].matrix == [[inf, inf, inf, inf, 4.9, 4.4, 0, 0, 0, 0, 0, 0, 0, 0, -2.9, -2.9, -3.6], [inf, inf, inf, inf, inf, 4.9, 4.4, 0, 0, 0, 0, 0, 0, 0, -2.9, -2.9, -3.6], [inf, inf, inf, inf, inf, inf, 4.9, 4.4, 0, 0, 0, 0, 0, 0, -2.9, -2.9, -2.9], [inf, inf, inf, inf, inf, inf, inf, 4.9, 4.4, 0, 0, 0, 0, 0, -2.9, -2.9, -2.9], [None, inf, inf, inf, inf, inf, inf, inf, 4.9, 4.4, 0, 0, 0, 0, -2.9, -2.9, -2.9], [None, None, inf, inf, inf, inf, inf, inf, inf, 4.9, 4.4, 0, 0, 0, -2.9, -2.9, -2.9], [None, None, None, inf, inf, inf, inf, inf, inf, inf, 4.9, 4.4, 0, 0, 0, -0.2, -0.2], [None, None, None, None, inf, inf, inf, inf, inf, inf, inf, 4.9, 4.4, 0, 0, -0.2, -0.2], [None, None, None, None, None, inf, inf, inf, inf, inf, inf, inf, 4.9, 4.4, 0, 0, 0], [None, None, None, None, None, None, inf, inf, inf, inf, inf, inf, inf, 4.9, 4.4, 0, 0], [None, None, None, None, None, None, None, inf, inf, inf, inf, inf, inf, inf, 4.9, 4.4, 0], [None, None, None, None, None, None, None, None, inf, inf, inf, inf, inf, inf, inf, 4.9, 4.4], [None, None, None, None, None, None, None, None, None, inf, inf, inf, inf, inf, inf, inf, 4.9], [None, None, None, None, None, None, None, None, None, None, inf, inf, inf, inf, inf, inf, inf], [None, None, None, None, None, None, None, None, None, None, None, inf, inf, inf, inf, inf, inf], [None, None, None, None, None, None, None, None, None, None, None, None, inf, inf, inf, inf, inf], [None, None, None, None, None, None, None, None, None, None, None, None, None, inf, inf, inf, inf]])
+assert(sstr == [(1, 16), (5, 14), (7, 13), (8, 12)])
+
 
 
 
