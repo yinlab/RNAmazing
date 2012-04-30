@@ -120,28 +120,89 @@ length_test = len( sstr )
 assert(length_test == 1)
 
 
-# testing speed of realtime recalc
 
-original_perm = Permutations([Strand("DNA","STRAND1","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")])
+# Testing speed of realtime recalculation of Nussinov
+
+# with recalc at 4th base of 40 base structure...
+original_perm = Permutations([Strand("DNA","STRAND1","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")])
 (sstr, seq, list_of_matrices) = master.algorithm_operator(original_perm, "nussinov")
 
-def with_recal():
+def with_recal_1():
 	(sstr, seq, matrix_with_recal) = master.nussinov_realtime_execution(list_of_matrices, original_perm, "STRAND1", 3, 'T')
 
-def without_recal():
-	secondary_perm = Permutations([Strand("DNA","Strand1","AAATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")])
+def without_recal_1():
+	secondary_perm = Permutations([Strand("DNA","Strand1","AAATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")])
 	(sstr, seq, list_of_matrices_2) = master.algorithm_operator(secondary_perm, "nussinov")
 	matrix_without_recal = list_of_matrices_2[0]
 
 
-time_with_recalc = timeit.Timer(setup='from __main__ import with_recal', stmt='with_recal()').timeit(200)
-time_without_recalc = timeit.Timer(setup='from __main__ import without_recal', stmt='without_recal()').timeit(200)
+time_with_recalc_1 = timeit.Timer(setup='from __main__ import with_recal_1', stmt='with_recal_1()').timeit(300)
+time_without_recalc_1 = timeit.Timer(setup='from __main__ import without_recal_1', stmt='without_recal_1()').timeit(300)
 
-print "with recalc..."
-print time_with_recalc
+
+# with recalc at 21st base of 40 base structure...
+original_perm = Permutations([Strand("DNA","STRAND1","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")])
+(sstr, seq, list_of_matrices) = master.algorithm_operator(original_perm, "nussinov")
+
+def with_recal_2():
+	(sstr, seq, matrix_with_recal) = master.nussinov_realtime_execution(list_of_matrices, original_perm, "STRAND1", 20, 'T')
+
+def without_recal_2():
+	secondary_perm = Permutations([Strand("DNA","Strand1","AAAAAAAAAAAAAAAAAAAATAAAAAAAAAAAAAAAAAAA")])
+	(sstr, seq, list_of_matrices_2) = master.algorithm_operator(secondary_perm, "nussinov")
+	matrix_without_recal = list_of_matrices_2[0]
+
+
+time_with_recalc_2 = timeit.Timer(setup='from __main__ import with_recal_2', stmt='with_recal_2()').timeit(300)
+time_without_recalc_2 = timeit.Timer(setup='from __main__ import without_recal_2', stmt='without_recal_2()').timeit(300)
+
+
+# with recalc at 38th base of 40 base structure...
+original_perm = Permutations([Strand("DNA","STRAND1","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")])
+(sstr, seq, list_of_matrices) = master.algorithm_operator(original_perm, "nussinov")
+
+def with_recal_3():
+	(sstr, seq, matrix_with_recal) = master.nussinov_realtime_execution(list_of_matrices, original_perm, "STRAND1", 37, 'T')
+
+def without_recal_3():
+	secondary_perm = Permutations([Strand("DNA","Strand1","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAA")])
+	(sstr, seq, list_of_matrices_2) = master.algorithm_operator(secondary_perm, "nussinov")
+	matrix_without_recal = list_of_matrices_2[0]
+
+
+time_with_recalc_3 = timeit.Timer(setup='from __main__ import with_recal_3', stmt='with_recal_3()').timeit(300)
+time_without_recalc_3 = timeit.Timer(setup='from __main__ import without_recal_3', stmt='without_recal_3()').timeit(300)
+
+
+print "\nwith recalc at 4th base of 40 base structure..."
+print time_with_recalc_1
 print "without recalc..."
-print time_without_recalc
+print time_without_recalc_1
 
+if time_with_recalc_1 <= time_without_recalc_2:
+	print "Yay... Recalculation was faster!"
+else:
+	print "It seems recalculation was not faster in this instance ... :/ "
+
+print "\nwith recalc at 21st base of 40 base structure..."
+print time_with_recalc_2
+print "without recalc..."
+print time_without_recalc_2
+
+if time_with_recalc_2 <= time_without_recalc_2:
+	print "Yay... Recalculation was faster!"
+else:
+	print "It seems recalculation was not faster in this instance ... :/ "
+
+print "\nwith recalc at 38th base of 40 base structure..."
+print time_with_recalc_3
+print "without recalc..."
+print time_without_recalc_3
+
+if time_with_recalc_3 <= time_without_recalc_3:
+	print "Yay... Recalculation was faster!"
+else:
+	print "It seems recalculation was not faster in this instance ... :/ "
 
 #print perm.get_concatamer()
 
